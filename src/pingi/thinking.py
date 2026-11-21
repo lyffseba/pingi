@@ -1,6 +1,6 @@
-"""Strict binary thinking-mode contract for PINGY.
+"""Strict binary thinking-mode contract for PINGI.
 
-PINGY only exposes two modes — no adaptive or intermediate presets:
+PINGI only exposes two modes — no adaptive or intermediate presets:
   - "none" (DEFAULT): Thinking disabled (0.0) — fast, 3-4x fewer tokens, Qwen3.8-pi style
   - "high":           Inkling-2-Mini native high thinking effort (0.9)
 """
@@ -27,14 +27,14 @@ def resolve_thinking_effort(mode: str) -> float:
     normalized = mode.strip().lower()
     if normalized not in _MODE_TO_EFFORT:
         raise ValueError(
-            f"Unsupported PINGY thinking mode {mode!r}. "
-            "PINGY strictly supports binary modes only: 'none' (default, 0.0) or 'high' (0.9)."
+            f"Unsupported PINGI thinking mode {mode!r}. "
+            "PINGI strictly supports binary modes only: 'none' (default, 0.0) or 'high' (0.9)."
         )
     return _MODE_TO_EFFORT[normalized]  # type: ignore[index]
 
 
-class PingyEffortRenderer:
-    """Thin proxy around a Tinker Cookbook renderer that enforces PINGY's binary effort.
+class PingiEffortRenderer:
+    """Thin proxy around a Tinker Cookbook renderer that enforces PINGI's binary effort.
 
     When `thinking_mode="high"` (0.9), generation and supervised rendering both
     inject Inkling's exact `Thinking effort level: 0.9` conditioning prefix.

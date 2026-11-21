@@ -1,4 +1,4 @@
-"""Download trained PINGY weights from Tinker and publish to Hugging Face."""
+"""Download trained PINGI weights from Tinker and publish to Hugging Face."""
 
 from __future__ import annotations
 
@@ -25,15 +25,15 @@ tags:
 pipeline_tag: image-text-to-text
 ---
 
-# PINGY (`Inkling-2-Mini` — `pi`-Native)
+# PINGI (`Inkling-2-Mini` — `pi`-Native)
 
-**PINGY** is a LoRA adapter for [`thinkingmachines/Inkling-2-Mini`](https://huggingface.co/thinkingmachines/Inkling-2-Mini)
+**PINGI** is a LoRA adapter for [`thinkingmachines/Inkling-2-Mini`](https://huggingface.co/thinkingmachines/Inkling-2-Mini)
 trained with agentic reinforcement learning on **Tinker** directly inside a **`pi`-native Harbor environment**
 (`read`, `bash`, `edit`, `write`).
 
 ## Thinking Mode Policy (Binary Only)
 
-PINGY intentionally avoids adaptive/intermediate effort modes:
+PINGI intentionally avoids adaptive/intermediate effort modes:
 
 | Mode | `reasoning_effort` | Role |
 |---|---:|---|
@@ -45,7 +45,7 @@ PINGY intentionally avoids adaptive/intermediate effort modes:
 ```bash
 vllm serve thinkingmachines/Inkling-2-Mini \\
   --enable-lora --max-lora-rank 32 \\
-  --lora-modules pingy={hf_repo} \\
+  --lora-modules pingi={hf_repo} \\
   --enable-auto-tool-choice \\
   --tool-call-parser inkling \\
   --reasoning-parser inkling \\
@@ -60,12 +60,12 @@ Add to `~/.pi/agent/models.json` (see `configs/pi_models.json`):
 ```json
 {{
   "providers": {{
-    "pingy-local": {{
+    "pingi-local": {{
       "baseUrl": "http://localhost:8000/v1",
       "api": "openai-completions",
       "apiKey": "dummy",
       "models": [
-        {{ "id": "pingy", "name": "PINGY (No-Thinking Default)" }}
+        {{ "id": "pingi", "name": "PINGI (No-Thinking Default)" }}
       ]
     }}
   }}
@@ -80,8 +80,8 @@ class ExportConfig:
 
     # Example: tinker://.../weights/000160
     tinker_path: str
-    output_dir: str = "./artifacts/pingy-lora"
-    hf_repo: str | None = "lyffseba/pingy"
+    output_dir: str = "./artifacts/pingi-lora"
+    hf_repo: str | None = "lyffseba/pingi"
     private: bool = False
     push_to_hub: bool = False
     # Public upload requires a paired held-out eval that beats the base model.
@@ -92,7 +92,7 @@ def main(cfg: ExportConfig) -> None:
     from tinker_cookbook import weights
 
     if cfg.push_to_hub and not cfg.allow_unverified:
-        from pingy.release_gate import check_release
+        from pingi.release_gate import check_release
 
         gate = check_release()
         if not gate.ok:
@@ -103,7 +103,7 @@ def main(cfg: ExportConfig) -> None:
         logger.info(
             "Release gate passed: %.1f%% -> %.1f%% on %d tasks (+%d / -%d)",
             100 * gate.base_pass,
-            100 * gate.pingy_pass,
+            100 * gate.pingi_pass,
             gate.n_tasks,
             gate.newly_solved,
             gate.lost,
@@ -117,7 +117,7 @@ def main(cfg: ExportConfig) -> None:
 
     readme = out / "README.md"
     readme.write_text(
-        MODEL_CARD_TEMPLATE.format(hf_repo=cfg.hf_repo or "lyffseba/pingy"),
+        MODEL_CARD_TEMPLATE.format(hf_repo=cfg.hf_repo or "lyffseba/pingi"),
         encoding="utf-8",
     )
     logger.info("Wrote model card to %s", readme)
@@ -133,9 +133,9 @@ def main(cfg: ExportConfig) -> None:
             folder_path=str(out),
             repo_id=cfg.hf_repo,
             repo_type="model",
-            commit_message=f"Upload PINGY checkpoint exported from {cfg.tinker_path}",
+            commit_message=f"Upload PINGI checkpoint exported from {cfg.tinker_path}",
         )
-        logger.info("Published PINGY to https://huggingface.co/%s", cfg.hf_repo)
+        logger.info("Published PINGI to https://huggingface.co/%s", cfg.hf_repo)
     else:
         logger.info("Export complete locally. Pass push_to_hub=True to upload to Hugging Face.")
 

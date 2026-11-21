@@ -1,4 +1,4 @@
-"""Tinker RL Environment & DatasetBuilder for PINGY (pi-native Inkling-2-Mini)."""
+"""Tinker RL Environment & DatasetBuilder for PINGI (pi-native Inkling-2-Mini)."""
 
 from __future__ import annotations
 
@@ -24,20 +24,20 @@ from tinker_cookbook.sandbox import SandboxInterface
 from tinker_cookbook.sandbox.modal_sandbox import ModalSandbox
 from tinker_cookbook.tool_use import build_agent_tool_env
 
-from pingy.datasets import PingyTask
-from pingy.pi_tools import PI_SYSTEM_PROMPT, PiSandboxTools
-from pingy.reward import PingyHarborReward
-from pingy.thinking import DEFAULT_THINKING_MODE, PingyEffortRenderer, ThinkingMode
+from pingi.datasets import PingiTask
+from pingi.pi_tools import PI_SYSTEM_PROMPT, PiSandboxTools
+from pingi.reward import PingiHarborReward
+from pingi.thinking import DEFAULT_THINKING_MODE, PingiEffortRenderer, ThinkingMode
 
 logger = logging.getLogger(__name__)
 
-TaskSandboxFactory = Callable[[PingyTask, int], Awaitable[SandboxInterface]]
+TaskSandboxFactory = Callable[[PingiTask, int], Awaitable[SandboxInterface]]
 
 
 _MODAL_APP: Any = None
 _MODAL_APP_LOCK = asyncio.Lock()
-_MODAL_CREATE_LOCK = asyncio.Semaphore(int(os.environ.get("PINGY_MODAL_CONCURRENCY", "2")))
-_SETUP_SEMAPHORE = asyncio.Semaphore(int(os.environ.get("PINGY_SETUP_CONCURRENCY", "8")))
+_MODAL_CREATE_LOCK = asyncio.Semaphore(int(os.environ.get("PINGI_MODAL_CONCURRENCY", "2")))
+_SETUP_SEMAPHORE = asyncio.Semaphore(int(os.environ.get("PINGI_SETUP_CONCURRENCY", "8")))
 
 
 async def _modal_app() -> Any:
@@ -49,11 +49,12 @@ async def _modal_app() -> Any:
         if _MODAL_APP is None:
             import modal
 
-            _MODAL_APP = await modal.App.lookup.aio("pingy", create_if_missing=True)
+            app_name = os.environ.get("PINGI_RESOURCE_NAME", "pingi")
+            _MODAL_APP = await modal.App.lookup.aio(app_name, create_if_missing=True)
     return _MODAL_APP
 
 
-async def modal_sandbox_factory(task: PingyTask, timeout: int) -> SandboxInterface:
+async def modal_sandbox_factory(task: PingiTask, timeout: int) -> SandboxInterface:
     """Create a Modal sandbox for a Harbor task.
 
     Prefers prebuilt `docker_image` from `task.toml` (instant start for scale800
@@ -84,7 +85,7 @@ async def modal_sandbox_factory(task: PingyTask, timeout: int) -> SandboxInterfa
     )
 
 
-async def initialize_task_sandbox(sandbox: Any, task: PingyTask) -> str:
+async def initialize_task_sandbox(sandbox: Any, task: PingiTask) -> str:
     """Resolve effective workdir and run `environment/setup.sh` if the task requires it.
 
     Workdir resolution order:
@@ -114,14 +115,14 @@ async def initialize_task_sandbox(sandbox: Any, task: PingyTask) -> str:
         setup_res = None
         async with _SETUP_SEMAPHORE:
             setup_res = await sandbox.run_command(
-                f"bash {shlex.quote(setup_target)} > /tmp/pingy_setup.log 2>&1; "
+                f"bash {shlex.quote(setup_target)} > /tmp/pingi_setup.log 2>&1; "
                 f"rc=$?; rm -f {shlex.quote(setup_target)}; exit $rc",
                 workdir=workdir,
                 timeout=900,
             )
         if setup_res.exit_code != 0:
             logger.warning(
-                "setup.sh for task %s exited with %d (see /tmp/pingy_setup.log)",
+                "setup.sh for task %s exited with %d (see /tmp/pingi_setup.log)",
                 task.task_name,
                 setup_res.exit_code,
             )
@@ -129,7 +130,7 @@ async def initialize_task_sandbox(sandbox: Any, task: PingyTask) -> str:
     return workdir
 
 
-def build_pingy_rollout_config(
+def build_pingi_rollout_config(
     *,
     max_turns: int,
     max_trajectory_tokens: int,
@@ -159,8 +160,8 @@ def build_pingy_rollout_config(
 
 
 def initial_pi_messages(
-    task: PingyTask,
-    renderer: PingyEffortRenderer,
+    task: PingiTask,
+    renderer: PingiEffortRenderer,
     pi_tools: PiSandboxTools,
     workdir: str,
 ) -> list[Message]:
@@ -172,12 +173,12 @@ def initial_pi_messages(
     return prefix + [{"role": "user", "content": task.instruction}]
 
 
-class PingyEnvGroupBuilder(EnvGroupBuilder):
+class PingiEnvGroupBuilder(EnvGroupBuilder):
     """Spawns a group of pi-native Harbor sandboxes for one task."""
 
     def __init__(
         self,
-        task: PingyTask,
+        task: PingiTask,
         model_name: str,
         renderer_name: str | None,
         thinking_mode: ThinkingMode,
@@ -221,10 +222,10 @@ class PingyEnvGroupBuilder(EnvGroupBuilder):
             self.model_name
         )
         base_renderer = get_renderer(renderer_name, tokenizer)
-        renderer = PingyEffortRenderer(base_renderer, thinking_mode=self.thinking_mode)
+        renderer = PingiEffortRenderer(base_renderer, thinking_mode=self.thinking_mode)
 
         effective_grader_timeout = max(self.grader_timeout, self.task.verifier_timeout or 0)
-        rollout_cfg = build_pingy_rollout_config(
+        rollout_cfg = build_pingi_rollout_config(
             max_turns=self.max_turns,
             max_trajectory_tokens=self.max_trajectory_tokens,
             grader_timeout=effective_grader_timeout,
@@ -263,7 +264,7 @@ class PingyEnvGroupBuilder(EnvGroupBuilder):
                 workdir=effective_workdir,
                 default_command_timeout=self.command_timeout,
             )
-            reward_fn = PingyHarborReward(
+            reward_fn = PingiHarborReward(
                 tests_dir=tests_dir,
                 sandbox=sandbox,
                 telemetry=pi_tools.telemetry,
@@ -299,11 +300,11 @@ class PingyEnvGroupBuilder(EnvGroupBuilder):
         self._sandboxes.clear()
 
     def logging_tags(self) -> list[str]:
-        return ["pingy", f"thinking:{self.thinking_mode}", f"src:{self.task.source}"]
+        return ["pingi", f"thinking:{self.thinking_mode}", f"src:{self.task.source}"]
 
 
-class PingyRLDataset(RLDataset):
-    def __init__(self, env_group_builders: list[PingyEnvGroupBuilder], batch_size: int) -> None:
+class PingiRLDataset(RLDataset):
+    def __init__(self, env_group_builders: list[PingiEnvGroupBuilder], batch_size: int) -> None:
         self.env_group_builders = env_group_builders
         self.batch_size = batch_size
 
@@ -317,9 +318,9 @@ class PingyRLDataset(RLDataset):
 
 
 @chz.chz
-class PingyDatasetBuilder(RLDatasetBuilder):
-    train_tasks: list[PingyTask]
-    eval_tasks: list[PingyTask]
+class PingiDatasetBuilder(RLDatasetBuilder):
+    train_tasks: list[PingiTask]
+    eval_tasks: list[PingiTask]
     batch_size: int
     group_size: int
     model_name: str
@@ -337,9 +338,9 @@ class PingyDatasetBuilder(RLDatasetBuilder):
     w_clean_edits: float = 0.05
     sandbox_factory: TaskSandboxFactory | None = None
 
-    def _builders(self, tasks: list[PingyTask], group_size: int) -> list[PingyEnvGroupBuilder]:
+    def _builders(self, tasks: list[PingiTask], group_size: int) -> list[PingiEnvGroupBuilder]:
         return [
-            PingyEnvGroupBuilder(
+            PingiEnvGroupBuilder(
                 task=task,
                 model_name=self.model_name,
                 renderer_name=self.renderer_name,
@@ -361,12 +362,12 @@ class PingyDatasetBuilder(RLDatasetBuilder):
         ]
 
     async def __call__(self) -> tuple[RLDataset, RLDataset | None]:
-        train_ds = PingyRLDataset(
+        train_ds = PingiRLDataset(
             self._builders(self.train_tasks, self.group_size),
             batch_size=self.batch_size,
         )
         eval_ds = (
-            PingyRLDataset(
+            PingiRLDataset(
                 self._builders(self.eval_tasks, group_size=1),
                 batch_size=self.batch_size,
             )

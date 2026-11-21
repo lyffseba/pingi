@@ -11,23 +11,23 @@
 | **`harness-hub/Qwen3.8-27B-pi-adapted`** | 27B / 27B | **off** | **55.8%** (+16.3 pts; 16 solved / 2 lost) | **64.7%** (+25.5 pts; 15 solved / 2 lost) | **8 / 23** |
 | `thinkingmachines/Inkling-2-Mini` (official card, default thinking) | 3.4B (5.4B eff.) / 26.4B | default | 71.6% (`pi v0.83.0`) | 77.9% (`mini-swe-agent`) | — |
 | `unsloth/Inkling-2-Mini-GGUF` (`UD-Q4_K_XL` / `UD-Q8_K_XL`) | 3.4B (5.4B eff.) / 26.4B | base quant | Quantization of base (98.0% top-1 vs Q8) | Quantization of base | — |
-| `lyffseba/pingy-smo` | 3.4B (5.4B eff.) / 26.4B | `none` | *3-step smoke only — not a held-out eval* | *not evaluated* | — |
-| **`lyffseba/pingy` (`pilot` / `mvp` / `full`)** | 3.4B (5.4B eff.) / 26.4B | **`none`** | *pending `pingy-eval`* | *pending `pingy-eval`* | *pending* |
+| `lyffseba/pingi-smo` | 3.4B (5.4B eff.) / 26.4B | `none` | *3-step smoke only — not a held-out eval* | *not evaluated* | — |
+| **`lyffseba/pingi` (`pilot` / `mvp` / `full`)** | 3.4B (5.4B eff.) / 26.4B | **`none`** | *pending `pingi-eval`* | *pending `pingi-eval`* | *pending* |
 
 *Numbers for `Qwen3.8-27B-pi-adapted` are from [harness-hub/Qwen3.8-27B-pi-adapted](https://huggingface.co/harness-hub/Qwen3.8-27B-pi-adapted) (100-step budget, temp 0.8). Numbers for `Inkling-2-Mini` are from [thinkingmachines/Inkling-2-Mini](https://huggingface.co/thinkingmachines/Inkling-2-Mini). Do not mix different harnesses or thinking settings as equivalent.*
 
-## Why PINGY vs `Qwen3.8-27B-pi-adapted` Is Interesting
+## Why PINGI vs `Qwen3.8-27B-pi-adapted` Is Interesting
 
 - `Qwen3.8-27B` activates **27B dense parameters** per token.
 - `Inkling-2-Mini` activates **3.4B parameters** (5.4B effective across the 3-pass looped core) with a bundled DSpark speculator and 1M context — fitting on a 32–48 GB Mac or single DGX Spark.
-- Our goal for `pingy-pilot` → `pingy-mvp` → `pingy-full` is to test how close a **5.4B-effective looped MoE** with thinking OFF (`none`) can get to `Qwen3.8-27B-pi-adapted` under `pi` — with strictly verified, paired held-out numbers.
+- Our goal for `pingi-pilot` → `pingi-mvp` → `pingi-full` is to test how close a **5.4B-effective looped MoE** with thinking OFF (`none`) can get to `Qwen3.8-27B-pi-adapted` under `pi` — with strictly verified, paired held-out numbers.
 
 ## Running Paired Held-Out Evaluation
 
-Every `pingy-rl` run writes `heldout_tasks.json` (tasks excluded from both training and in-loop dev). Score any checkpoint against base `Inkling-2-Mini` on the exact same tasks:
+Every `pingi-rl` run writes `heldout_tasks.json` (tasks excluded from both training and in-loop dev). Score any checkpoint against base `Inkling-2-Mini` on the exact same tasks:
 
 ```sh
-uv run pingy-eval \
+uv run pingi-eval \
   checkpoint_path=tinker://<run-id>/sampler_weights/final \
   compare_with_base=True \
   heldout_file=<run-log>/heldout_tasks.json \

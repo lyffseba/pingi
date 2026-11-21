@@ -1,28 +1,28 @@
 {
   "providers": {
-    "pingy-vllm": {
+    "pingi-vllm": {
       "baseUrl": "http://localhost:8000/v1",
       "api": "openai-completions",
       "apiKey": "dummy",
       "models": [
         {
-          "id": "pingy",
-          "name": "PINGY (No-Thinking - Default)"
+          "id": "pingi",
+          "name": "PINGI (No-Thinking - Default)"
         },
         {
-          "id": "pingy-high",
-          "name": "PINGY (High Thinking)"
+          "id": "pingi-high",
+          "name": "PINGI (High Thinking)"
         }
       ]
     },
-    "pingy-llama-mac": {
+    "pingi-llama-mac": {
       "baseUrl": "http://localhost:9931/v1",
       "api": "openai-completions",
       "apiKey": "dummy",
       "models": [
         {
-          "id": "pingy",
-          "name": "PINGY Local (Llama.app / llama.cpp)"
+          "id": "pingi",
+          "name": "PINGI Local (Llama.app / llama.cpp)"
         }
       ]
     },

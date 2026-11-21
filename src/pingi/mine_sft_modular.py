@@ -2,7 +2,7 @@
 
 Uses Modular Cloud's OpenAI-compatible endpoint (`https://api.modular.com/v1`)
 with strong shared models (e.g. `deepseek/deepseek-v4.1-flash-1017` or `qwen/qwen3.8-27b`)
-to solve Harbor tasks using PINGY's exact `pi` tools (`read`, `bash`, `edit`, `write`).
+to solve Harbor tasks using PINGI's exact `pi` tools (`read`, `bash`, `edit`, `write`).
 Only trajectories that PASS the Harbor verifier are written to JSONL for optional
 SFT warm-starting before Tinker RL.
 """
@@ -20,11 +20,11 @@ import chz
 from dotenv import load_dotenv
 from openai import AsyncOpenAI
 
-from pingy.datasets import PingyTask, load_datasets_spec
-from pingy.docker_sandbox import docker_sandbox_factory
-from pingy.env import initialize_task_sandbox, modal_sandbox_factory
-from pingy.pi_tools import PI_SYSTEM_PROMPT, PiSandboxTools
-from pingy.reward import PingyHarborReward
+from pingi.datasets import PingiTask, load_datasets_spec
+from pingi.docker_sandbox import docker_sandbox_factory
+from pingi.env import initialize_task_sandbox, modal_sandbox_factory
+from pingi.pi_tools import PI_SYSTEM_PROMPT, PiSandboxTools
+from pingi.reward import PingiHarborReward
 
 logger = logging.getLogger(__name__)
 
@@ -156,7 +156,7 @@ async def _dispatch_tool(
 async def _run_one(
     client: AsyncOpenAI,
     model: str,
-    task: PingyTask,
+    task: PingiTask,
     cfg: MineConfig,
     sem: asyncio.Semaphore,
 ) -> dict[str, Any] | None:
@@ -166,7 +166,7 @@ async def _run_one(
         try:
             workdir = await initialize_task_sandbox(sandbox, task)
             pi_tools = PiSandboxTools(sandbox=sandbox, workdir=workdir)
-            reward_fn = PingyHarborReward(
+            reward_fn = PingiHarborReward(
                 tests_dir=task.task_dir / "tests",
                 sandbox=sandbox,
                 telemetry=pi_tools.telemetry,
@@ -235,7 +235,7 @@ async def run(cfg: MineConfig) -> None:
     base_url, model, env_var = resolve_mining_provider(cfg)
     api_key = os.environ.get(env_var)
     if not api_key:
-        raise RuntimeError(f"Set {env_var} in pingy/.env to mine traces with provider={cfg.provider}.")
+        raise RuntimeError(f"Set {env_var} in pingi/.env to mine traces with provider={cfg.provider}.")
 
     groups = load_datasets_spec(cfg.dataset)
     tasks = [t for g in groups for t in g][: cfg.max_tasks]

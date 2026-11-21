@@ -1,4 +1,4 @@
-"""PINGY reward function: Harbor verifier correctness + gated pi-native shaping.
+"""PINGI reward function: Harbor verifier correctness + gated pi-native shaping.
 
 Shaping bonuses (tool efficiency, clean exact-match edits, avoiding cat/sed in bash)
 are strictly gated on `correctness >= 1.0`, preventing reward hacking where a model
@@ -14,7 +14,7 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
 
-from pingy.pi_tools import PiTelemetry
+from pingi.pi_tools import PiTelemetry
 
 logger = logging.getLogger(__name__)
 
@@ -75,7 +75,7 @@ def compute_shaped_reward(
 
 
 @dataclass
-class PingyHarborReward:
+class PingiHarborReward:
     """Grades a Harbor task via `tests/test.sh` and applies gated pi-native shaping."""
 
     tests_dir: Path

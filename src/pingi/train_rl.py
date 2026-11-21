@@ -1,4 +1,4 @@
-"""Launch PINGY RL training on Tinker for `thinkingmachines/Inkling-2-Mini`.
+"""Launch PINGI RL training on Tinker for `thinkingmachines/Inkling-2-Mini`.
 
 Default thinking mode is strictly `none` (0.0) — fast, low-token `pi` execution.
 Only binary `none` (0.0) or `high` (0.9) is permitted — no adaptive effort levels.
@@ -20,10 +20,10 @@ from dotenv import load_dotenv
 from tinker_cookbook import cli_utils, model_info
 from tinker_cookbook.rl.train import AsyncConfig, Config, main
 
-from pingy.datasets import load_datasets_spec, split_train_dev_heldout
-from pingy.docker_sandbox import docker_sandbox_factory
-from pingy.env import PingyDatasetBuilder, modal_sandbox_factory
-from pingy.thinking import DEFAULT_THINKING_MODE, ThinkingMode, resolve_thinking_effort
+from pingi.datasets import load_datasets_spec, split_train_dev_heldout
+from pingi.docker_sandbox import docker_sandbox_factory
+from pingi.env import PingiDatasetBuilder, modal_sandbox_factory
+from pingi.thinking import DEFAULT_THINKING_MODE, ThinkingMode, resolve_thinking_effort
 
 logger = logging.getLogger(__name__)
 
@@ -95,8 +95,8 @@ _CUSTOM_DEFAULTS: dict[str, object] = {
 
 
 @chz.chz
-class PingyRLConfig:
-    """CLI configuration for PINGY agentic RL on Tinker."""
+class PingiRLConfig:
+    """CLI configuration for PINGI agentic RL on Tinker."""
 
     # Budget preset: "smoke" (~$0.25), "pilot" (~$7), "mvp" (~$15-$40), "full" (~$75-$135), or "custom"
     preset: PresetName = "custom"
@@ -149,14 +149,14 @@ class PingyRLConfig:
 
     # Checkpointing & observability
     log_path: str | None = None
-    wandb_project: str | None = "pingy"
+    wandb_project: str | None = "pingi"
     wandb_name: str | None = None
     session_name: str | None = None
     base_url: str | None = None
     behavior_if_log_dir_exists: cli_utils.LogdirBehavior = "ask"
 
 
-def resolve_preset_values(cfg: PingyRLConfig) -> dict[str, object]:
+def resolve_preset_values(cfg: PingiRLConfig) -> dict[str, object]:
     """Merge preset defaults with explicit CLI overrides (explicit overrides always win)."""
     base = dict(_CUSTOM_DEFAULTS)
     if cfg.preset != "custom":
@@ -179,7 +179,7 @@ def resolve_preset_values(cfg: PingyRLConfig) -> dict[str, object]:
     return base
 
 
-async def run(cfg: PingyRLConfig) -> None:
+async def run(cfg: PingiRLConfig) -> None:
     effort = resolve_thinking_effort(cfg.thinking_mode)
     params = resolve_preset_values(cfg)
     sandbox_kind = str(params["sandbox"])
@@ -194,7 +194,7 @@ async def run(cfg: PingyRLConfig) -> None:
     sampling_steps_ahead = int(raw_ahead) if raw_ahead is not None else None  # type: ignore[arg-type]
 
     logger.info(
-        "PINGY preset=%s thinking_mode=%s (effort=%.1f) loss_fn=%s sandbox=%s rollouts=%s",
+        "PINGI preset=%s thinking_mode=%s (effort=%.1f) loss_fn=%s sandbox=%s rollouts=%s",
         cfg.preset,
         cfg.thinking_mode,
         effort,
@@ -208,8 +208,8 @@ async def run(cfg: PingyRLConfig) -> None:
     ) and not (Path.home() / ".modal.toml").is_file():
         raise SystemExit(
             "Pilot/MVP needs Modal sandboxes. Add MODAL_TOKEN_ID and MODAL_TOKEN_SECRET "
-            "to pingy/.env from https://modal.com/settings, then rerun "
-            "`uv run pingy-rl preset=pilot session_name=pingy-pilot`."
+            "to pingi/.env from https://modal.com/settings, then rerun "
+            "`uv run pingi-rl preset=pilot session_name=pingi-pilot`."
         )
 
     wandb_project = cfg.wandb_project
@@ -239,14 +239,15 @@ async def run(cfg: PingyRLConfig) -> None:
     sandbox_factory = modal_sandbox_factory if sandbox_kind == "modal" else docker_sandbox_factory
     renderer_name = cfg.renderer_name or model_info.get_recommended_renderer_name(cfg.model_name)
 
+    resource_name = os.environ.get("PINGI_RESOURCE_NAME", "pingi")
     run_name = (
-        f"pingy-{cfg.preset}-{cfg.thinking_mode}-r{cfg.lora_rank}-lr{cfg.learning_rate}-"
+        f"{resource_name}-{cfg.preset}-{cfg.thinking_mode}-r{cfg.lora_rank}-lr{cfg.learning_rate}-"
         f"g{group_size}x{groups_per_batch}-{datetime.now().strftime('%Y%m%d-%H%M')}"
     )
-    log_path = cfg.log_path or cli_utils.runs_path("pingy", run_name)
+    log_path = cfg.log_path or cli_utils.runs_path(resource_name, run_name)
     wandb_name = cfg.wandb_name or run_name
 
-    dataset_builder = PingyDatasetBuilder(
+    dataset_builder = PingiDatasetBuilder(
         train_tasks=train_tasks,
         eval_tasks=eval_tasks,
         batch_size=groups_per_batch,
@@ -270,7 +271,7 @@ async def run(cfg: PingyRLConfig) -> None:
         learning_rate=cfg.learning_rate,
         dataset_builder=dataset_builder,
         model_name=cfg.model_name,
-        recipe_name="pingy_harbor_rl",
+        recipe_name="pingi_harbor_rl",
         lora_rank=cfg.lora_rank,
         loss_fn=cfg.loss_fn,
         max_tokens=cfg.max_tokens,
@@ -316,7 +317,7 @@ async def run(cfg: PingyRLConfig) -> None:
 def entrypoint() -> None:
     load_dotenv()
     logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(name)s: %(message)s")
-    cfg = chz.entrypoint(PingyRLConfig)
+    cfg = chz.entrypoint(PingiRLConfig)
     asyncio.run(run(cfg))
 
 

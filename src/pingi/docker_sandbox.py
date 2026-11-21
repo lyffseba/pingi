@@ -10,11 +10,12 @@ from __future__ import annotations
 import asyncio
 import hashlib
 import logging
+import os
 import shlex
 import uuid
 from dataclasses import dataclass
 
-from pingy.datasets import PingyTask
+from pingi.datasets import PingiTask
 
 logger = logging.getLogger(__name__)
 
@@ -44,7 +45,7 @@ class DockerSandbox:
         self.container_id = container_id
 
     @classmethod
-    async def _ensure_image(cls, task: PingyTask) -> str:
+    async def _ensure_image(cls, task: PingiTask) -> str:
         # 1. Prefer prebuilt registry image when specified in task.toml
         if task.docker_image:
             image = task.docker_image
@@ -110,7 +111,8 @@ class DockerSandbox:
             )
         env_dir = dockerfile.parent
         digest = hashlib.sha256(str(env_dir.resolve()).encode()).hexdigest()[:12]
-        image_tag = f"pingy-harbor-{digest}"
+        prefix = os.environ.get("PINGI_RESOURCE_NAME", "pingi")
+        image_tag = f"{prefix}-harbor-{digest}"
 
         async with _lock_for(f"build:{image_tag}"):
             if image_tag not in _BUILT_IMAGES:
@@ -135,10 +137,11 @@ class DockerSandbox:
         return image_tag
 
     @classmethod
-    async def create_for_task(cls, task: PingyTask, timeout: int = 600) -> DockerSandbox:
+    async def create_for_task(cls, task: PingiTask, timeout: int = 600) -> DockerSandbox:
         del timeout
         image = await cls._ensure_image(task)
-        name = f"pingy-{uuid.uuid4().hex[:12]}"
+        prefix = os.environ.get("PINGI_RESOURCE_NAME", "pingi")
+        name = f"{prefix}-{uuid.uuid4().hex[:12]}"
         run = await asyncio.create_subprocess_exec(
             "docker",
             "run",
@@ -270,5 +273,5 @@ class DockerSandbox:
         await proc.communicate()
 
 
-async def docker_sandbox_factory(task: PingyTask, timeout: int) -> DockerSandbox:
+async def docker_sandbox_factory(task: PingiTask, timeout: int) -> DockerSandbox:
     return await DockerSandbox.create_for_task(task=task, timeout=timeout)

@@ -1,7 +1,7 @@
 """Pi-native tool suite (`read`, `bash`, `edit`, `write`) for Harbor sandboxes.
 
 Mirrors the exact tool names, parameter semantics, truncation rules, and prompt
-conventions of the `pi` coding agent harness so PINGY learns native `pi` fluency
+conventions of the `pi` coding agent harness so PINGI learns native `pi` fluency
 during Tinker RL and SFT.
 """
 
@@ -38,7 +38,7 @@ MAX_BASH_BYTES = 16 * 1024
 
 _CAT_OR_SED_RE = re.compile(r"(?:^|[;&|]\s*)(?:cat|sed\s+-n|head|tail)\s+\S+", re.MULTILINE)
 
-PI_SYSTEM_PROMPT = """You are PINGY, a coding assistant running inside pi, a coding agent harness. Help users inspect files, run commands, and modify code.
+PI_SYSTEM_PROMPT = """You are PINGI, a coding assistant running inside pi, a coding agent harness. Help users inspect files, run commands, and modify code.
 
 <tools>
 - read: Read file contents

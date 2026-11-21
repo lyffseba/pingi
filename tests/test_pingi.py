@@ -1,4 +1,4 @@
-"""Unit tests for PINGY pi-native tools, gated reward shaping, and binary thinking policy."""
+"""Unit tests for PINGI pi-native tools, gated reward shaping, and binary thinking policy."""
 
 from __future__ import annotations
 
@@ -7,13 +7,13 @@ from dataclasses import dataclass
 
 import pytest
 
-from pingy.pi_tools import PiSandboxTools, apply_pi_edits
-from pingy.reward import compute_shaped_reward
-from pingy.thinking import (
+from pingi.pi_tools import PiSandboxTools, apply_pi_edits
+from pingi.reward import compute_shaped_reward
+from pingi.thinking import (
     DEFAULT_THINKING_MODE,
     THINKING_EFFORT_HIGH,
     THINKING_EFFORT_NONE,
-    PingyEffortRenderer,
+    PingiEffortRenderer,
     resolve_thinking_effort,
 )
 
@@ -59,11 +59,11 @@ def test_effort_renderer_injects_default_none_and_high() -> None:
         def build_supervised_example(self, messages, *, effort=None):
             return {"messages": messages, "effort": effort}
 
-    r_default = PingyEffortRenderer(_DummyBase())
+    r_default = PingiEffortRenderer(_DummyBase())
     assert r_default.build_generation_prompt([])["effort"] == 0.0
     assert r_default.build_supervised_example([])["effort"] == 0.0
 
-    r_high = PingyEffortRenderer(_DummyBase(), thinking_mode="high")
+    r_high = PingiEffortRenderer(_DummyBase(), thinking_mode="high")
     assert r_high.build_generation_prompt([])["effort"] == 0.9
     assert r_high.build_supervised_example([])["effort"] == 0.9
 
@@ -131,7 +131,7 @@ def test_pi_tools_and_gated_reward() -> None:
 
 
 def test_budget_presets_ladder() -> None:
-    from pingy.train_rl import PRESETS, PingyRLConfig, resolve_preset_values
+    from pingi.train_rl import PRESETS, PingiRLConfig, resolve_preset_values
 
     assert set(PRESETS.keys()) == {"smoke", "pilot", "mvp", "full"}
     # Pilot = 4 * 8 * 20 = 640 rollouts (~$7 half-MVP on Tinker non-thinking)
@@ -142,7 +142,7 @@ def test_budget_presets_ladder() -> None:
     assert PRESETS["full"]["group_size"] * PRESETS["full"]["groups_per_batch"] * PRESETS["full"]["max_steps"] == 5120
 
     # Explicit CLI overrides must ALWAYS beat preset defaults!
-    cfg = PingyRLConfig(preset="pilot", sandbox="docker", max_steps=12)
+    cfg = PingiRLConfig(preset="pilot", sandbox="docker", max_steps=12)
     resolved = resolve_preset_values(cfg)
     assert resolved["sandbox"] == "docker"
     assert resolved["max_steps"] == 12
@@ -151,8 +151,8 @@ def test_budget_presets_ladder() -> None:
 
 
 def test_harbor_layouts_termgrade_and_scale800(tmp_path) -> None:
-    from pingy.datasets import load_tasks_from_dir
-    from pingy.env import initialize_task_sandbox
+    from pingi.datasets import load_tasks_from_dir
+    from pingi.env import initialize_task_sandbox
 
     # Layout A: termgrade-train-harbor (NO Dockerfile! docker_image + setup.sh + workdir=/app)
     tg = tmp_path / "tasks" / "task_00000"
@@ -196,12 +196,12 @@ def test_sft_datum_and_paired_eval_table() -> None:
     from tinker_cookbook.renderers import TrainOnWhat, get_renderer
     from tinker_cookbook.supervised.data import conversation_to_datum
 
-    from pingy.eval import EvalTaskResult, format_summary_table
-    from pingy.train_sft import normalize_trace_for_inkling
+    from pingi.eval import EvalTaskResult, format_summary_table
+    from pingi.train_sft import normalize_trace_for_inkling
 
     model_name = "thinkingmachines/Inkling-2-Mini"
     tok = tokenizer_utils.get_tokenizer(model_name)
-    r = PingyEffortRenderer(
+    r = PingiEffortRenderer(
         get_renderer(model_info.get_recommended_renderer_name(model_name), tok),
         thinking_mode="none",
     )
@@ -234,7 +234,7 @@ def test_sft_datum_and_paired_eval_table() -> None:
     table = format_summary_table(
         "base",
         [EvalTaskResult("t1", False, 0.0, 0.0, 10, 12, 2, 1, 5.0)],
-        "PINGY",
+        "PINGI",
         [EvalTaskResult("t1", True, 1.0, 1.1, 4, 5, 1, 0, 2.0)],
     )
     assert "+1 newly solved / -0 lost" in table
@@ -244,7 +244,7 @@ def test_sft_datum_and_paired_eval_table() -> None:
 def test_edit_schema_exposes_oldtext_and_newtext_and_verifier_timeout(tmp_path) -> None:
     import json
 
-    from pingy.datasets import load_tasks_from_dir
+    from pingi.datasets import load_tasks_from_dir
 
     tools = PiSandboxTools(sandbox=_FakeSandbox(), workdir="/app")
     edit_tool = next(t for t in tools.all_tools() if t.name == "edit")
@@ -266,12 +266,12 @@ def test_edit_schema_exposes_oldtext_and_newtext_and_verifier_timeout(tmp_path) 
 def test_heldout_split_and_release_gate() -> None:
     from pathlib import Path
 
-    from pingy.datasets import PingyTask, split_train_dev_heldout
-    from pingy.release_gate import evaluate_pair
+    from pingi.datasets import PingiTask, split_train_dev_heldout
+    from pingi.release_gate import evaluate_pair
 
     groups = [
         [
-            PingyTask(task_name=f"t{i}", instruction="x", task_dir=Path(f"/tmp/t{i}"))
+            PingiTask(task_name=f"t{i}", instruction="x", task_dir=Path(f"/tmp/t{i}"))
             for i in range(40)
         ]
     ]
@@ -285,8 +285,8 @@ def test_heldout_split_and_release_gate() -> None:
     assert not {t.task_name for t in heldout} & {t.task_name for t in train}
 
     base = [{"task_name": f"t{i}", "passed": i < 5} for i in range(20)]
-    pingy = [{"task_name": f"t{i}", "passed": i < 12} for i in range(20)]
-    gate = evaluate_pair(base, pingy, min_tasks=20)
+    pingi = [{"task_name": f"t{i}", "passed": i < 12} for i in range(20)]
+    gate = evaluate_pair(base, pingi, min_tasks=20)
     assert gate.ok
     assert gate.newly_solved == 7
     assert gate.lost == 0
@@ -296,7 +296,7 @@ def test_heldout_split_and_release_gate() -> None:
 
 
 def test_mining_provider_resolution() -> None:
-    from pingy.mine_sft_modular import MineConfig, resolve_mining_provider
+    from pingi.mine_sft_modular import MineConfig, resolve_mining_provider
 
     url_m, model_m, env_m = resolve_mining_provider(MineConfig(provider="modular"))
     assert "modular.com" in url_m and env_m == "MODULAR_API_KEY" and model_m
@@ -310,8 +310,8 @@ def test_inkling2_mini_renderer_and_tool_env_integration() -> None:
     from tinker_cookbook.renderers import get_renderer
     from tinker_cookbook.tool_use import build_agent_tool_env
 
-    from pingy.env import build_pingy_rollout_config
-    from pingy.pi_tools import PI_SYSTEM_PROMPT
+    from pingi.env import build_pingi_rollout_config
+    from pingi.pi_tools import PI_SYSTEM_PROMPT
 
     model_name = "thinkingmachines/Inkling-2-Mini"
     tok = tokenizer_utils.get_tokenizer(model_name)
@@ -319,7 +319,7 @@ def test_inkling2_mini_renderer_and_tool_env_integration() -> None:
 
     base = get_renderer(model_info.get_recommended_renderer_name(model_name), tok)
     tools = PiSandboxTools(sandbox=_FakeSandbox(), workdir="/app")
-    rollout_cfg = build_pingy_rollout_config(
+    rollout_cfg = build_pingi_rollout_config(
         max_turns=25, max_trajectory_tokens=32768, grader_timeout=300
     )
 
@@ -328,7 +328,7 @@ def test_inkling2_mini_renderer_and_tool_env_integration() -> None:
             return 1.0, {}
 
         for mode, expected_str in (("none", "Thinking effort level: 0"), ("high", "Thinking effort level: 0.9")):
-            r = PingyEffortRenderer(base, thinking_mode=mode)  # type: ignore[arg-type]
+            r = PingiEffortRenderer(base, thinking_mode=mode)  # type: ignore[arg-type]
             prefix = r.create_conversation_prefix_with_tools(
                 tools=tools.tool_specs(), system_prompt=PI_SYSTEM_PROMPT
             )

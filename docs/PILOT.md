@@ -3,7 +3,7 @@
 The ~$7 run is:
 
 ```sh
-uv run pingy-rl preset=pilot session_name=pingy-pilot behavior_if_log_dir_exists=delete
+uv run pingi-rl preset=pilot session_name=pingi-pilot behavior_if_log_dir_exists=delete
 ```
 
 That is 640 rollouts (`4 x 8 x 20`) of `harness-hub/scale800-harbor` and `harness-hub/termgrade-train-harbor` on Tinker, with Modal sandboxes. Thinking mode is `none`.
@@ -16,7 +16,7 @@ That is 640 rollouts (`4 x 8 x 20`) of `harness-hub/scale800-harbor` and `harnes
 | Modal | `MODAL_TOKEN_ID` and `MODAL_TOKEN_SECRET` | https://modal.com/settings |
 | W&B | `WANDB_API_KEY` | https://wandb.ai/authorize |
 
-`pingy-rl` refuses to start `preset=pilot` without Modal. If W&B is missing it still trains and writes local metrics, but there is no live chart.
+`pingi-rl` refuses to start `preset=pilot` without Modal. If W&B is missing it still trains and writes local metrics, but there is no live chart.
 
 ## Reference Benchmarks
 
@@ -25,7 +25,7 @@ Our primary apples-to-apples reference is [`harness-hub/Qwen3.8-27B-pi-adapted`]
 After the pilot checkpoint exists, compare it to base `Inkling-2-Mini` on the held-out file written next to the run log:
 
 ```sh
-uv run pingy-eval \
+uv run pingi-eval \
   checkpoint_path=tinker://<pilot-run>/sampler_weights/final \
   compare_with_base=True \
   heldout_file=<run-log>/heldout_tasks.json \
@@ -34,4 +34,4 @@ uv run pingy-eval \
   max_tasks=20
 ```
 
-Do not treat Unsloth's KL table as a PINGY pass-rate score.
+Do not treat Unsloth's KL table as a PINGI pass-rate score.

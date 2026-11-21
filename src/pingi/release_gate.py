@@ -12,7 +12,7 @@ class GateResult:
     ok: bool
     reasons: tuple[str, ...]
     base_pass: float
-    pingy_pass: float
+    pingi_pass: float
     newly_solved: int
     lost: int
     n_tasks: int
@@ -27,21 +27,21 @@ def _load_jsonl(path: Path) -> list[dict]:
     return rows
 
 
-def evaluate_pair(base_rows: list[dict], pingy_rows: list[dict], min_tasks: int = 20) -> GateResult:
+def evaluate_pair(base_rows: list[dict], pingi_rows: list[dict], min_tasks: int = 20) -> GateResult:
     by_base = {r["task_name"]: bool(r.get("passed")) for r in base_rows}
-    by_pingy = {r["task_name"]: bool(r.get("passed")) for r in pingy_rows}
-    common = sorted(set(by_base) & set(by_pingy))
+    by_pingi = {r["task_name"]: bool(r.get("passed")) for r in pingi_rows}
+    common = sorted(set(by_base) & set(by_pingi))
     n = len(common)
     base_pass = (sum(by_base[t] for t in common) / n) if n else 0.0
-    pingy_pass = (sum(by_pingy[t] for t in common) / n) if n else 0.0
-    newly = sum(1 for t in common if not by_base[t] and by_pingy[t])
-    lost = sum(1 for t in common if by_base[t] and not by_pingy[t])
+    pingi_pass = (sum(by_pingi[t] for t in common) / n) if n else 0.0
+    newly = sum(1 for t in common if not by_base[t] and by_pingi[t])
+    lost = sum(1 for t in common if by_base[t] and not by_pingi[t])
     reasons: list[str] = []
     if n < min_tasks:
         reasons.append(f"need at least {min_tasks} paired held-out tasks, found {n}")
-    if pingy_pass < base_pass:
+    if pingi_pass < base_pass:
         reasons.append(
-            f"PINGY pass@1 {pingy_pass:.1%} is below base {base_pass:.1%} on the same tasks"
+            f"PINGI pass@1 {pingi_pass:.1%} is below base {base_pass:.1%} on the same tasks"
         )
     if newly <= lost:
         reasons.append(f"newly solved ({newly}) is not greater than lost ({lost})")
@@ -49,7 +49,7 @@ def evaluate_pair(base_rows: list[dict], pingy_rows: list[dict], min_tasks: int 
         ok=not reasons,
         reasons=tuple(reasons),
         base_pass=base_pass,
-        pingy_pass=pingy_pass,
+        pingi_pass=pingi_pass,
         newly_solved=newly,
         lost=lost,
         n_tasks=n,
@@ -65,10 +65,10 @@ def latest_eval_dir(root: Path) -> Path | None:
 
 def check_release(eval_root: Path = Path("./artifacts/evals"), min_tasks: int = 20) -> GateResult:
     found = latest_eval_dir(eval_root)
-    if found is None or not (found / "pingy.jsonl").is_file():
+    if found is None or not (found / "pingi.jsonl").is_file():
         return GateResult(
             False,
-            ("no paired eval found; run `uv run pingy-eval compare_with_base=True` first",),
+            ("no paired eval found; run `uv run pingi-eval compare_with_base=True` first",),
             0.0,
             0.0,
             0,
@@ -77,6 +77,6 @@ def check_release(eval_root: Path = Path("./artifacts/evals"), min_tasks: int = 
         )
     return evaluate_pair(
         _load_jsonl(found / "base.jsonl"),
-        _load_jsonl(found / "pingy.jsonl"),
+        _load_jsonl(found / "pingi.jsonl"),
         min_tasks=min_tasks,
     )

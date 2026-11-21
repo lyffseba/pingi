@@ -1,4 +1,4 @@
-"""Print the Tinker path to resume a PINGY run (`uv run pingy-resume log_dir=...`)."""
+"""Print the Tinker path to resume a PINGI run (`uv run pingi-resume log_dir=...`)."""
 
 from __future__ import annotations
 
@@ -24,5 +24,5 @@ def entrypoint() -> None:
     print(path)
     print(
         "Resume with:\n"
-        f"  uv run pingy-rl preset=mvp load_checkpoint_path={path}"
+        f"  uv run pingi-rl preset=mvp load_checkpoint_path={path}"
     )

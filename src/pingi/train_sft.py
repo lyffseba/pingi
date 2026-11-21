@@ -1,9 +1,9 @@
-"""Stage 1 Tinker SFT Warm-Start Trainer for PINGY (`uv run pingy-sft`).
+"""Stage 1 Tinker SFT Warm-Start Trainer for PINGI (`uv run pingi-sft`).
 
 Trains `thinkingmachines/Inkling-2-Mini` on verified `pi` trajectories JSONL
-(mined by `pingy-mine` on Modular Cloud or exported from earlier runs), using
-the exact same `PingyEffortRenderer` (`none=0.0` default / `high=0.9`) and `pi`
-tool schemas as RL so the resulting checkpoint feeds seamlessly into `pingy-rl`.
+(mined by `pingi-mine` on Modular Cloud or exported from earlier runs), using
+the exact same `PingiEffortRenderer` (`none=0.0` default / `high=0.9`) and `pi`
+tool schemas as RL so the resulting checkpoint feeds seamlessly into `pingi-rl`.
 """
 
 from __future__ import annotations
@@ -25,10 +25,10 @@ from tinker_cookbook.supervised import train as sl_train
 from tinker_cookbook.supervised.data import conversation_to_datum
 from tinker_cookbook.supervised.types import SupervisedDataset, SupervisedDatasetBuilder
 
-from pingy.pi_tools import PI_SYSTEM_PROMPT, PiSandboxTools
-from pingy.thinking import (
+from pingi.pi_tools import PI_SYSTEM_PROMPT, PiSandboxTools
+from pingi.thinking import (
     DEFAULT_THINKING_MODE,
-    PingyEffortRenderer,
+    PingiEffortRenderer,
     ThinkingMode,
     resolve_thinking_effort,
 )
@@ -38,12 +38,12 @@ logger = logging.getLogger(__name__)
 
 def normalize_trace_for_inkling(
     raw_messages: list[dict[str, Any]],
-    renderer: PingyEffortRenderer,
+    renderer: PingiEffortRenderer,
     thinking_mode: ThinkingMode,
 ) -> list[dict[str, Any]]:
     """Normalize mined OpenAI-format pi traces into Inkling renderer messages.
 
-    - Re-applies PINGY's canonical 4-tool declaration prefix (`read`, `bash`, `edit`, `write`).
+    - Re-applies PINGI's canonical 4-tool declaration prefix (`read`, `bash`, `edit`, `write`).
     - Drops any teacher `reasoning_content` when training the `none` (non-thinking) model
       so SFT strictly matches zero-thinking inference.
     - Keeps OpenAI-format `tool_calls` (`{function: {name, arguments: json-string}}`),
@@ -87,7 +87,7 @@ def load_verified_traces(jsonl_path: Path, min_score: float = 1.0) -> list[list[
     return conversations
 
 
-class PingySFTDataset(SupervisedDataset):
+class PingiSFTDataset(SupervisedDataset):
     """In-memory batchable SupervisedDataset of verified pi trajectories."""
 
     def __init__(self, datums: list[tinker.Datum], batch_size: int) -> None:
@@ -107,7 +107,7 @@ class PingySFTDataset(SupervisedDataset):
 
 
 @chz.chz
-class PingySFTDatasetBuilder(SupervisedDatasetBuilder):
+class PingiSFTDatasetBuilder(SupervisedDatasetBuilder):
     jsonl_path: str
     model_name: str
     thinking_mode: ThinkingMode = DEFAULT_THINKING_MODE
@@ -121,7 +121,7 @@ class PingySFTDatasetBuilder(SupervisedDatasetBuilder):
     def __call__(self) -> tuple[SupervisedDataset, SupervisedDataset | None]:
         tok = tokenizer_utils.get_tokenizer(self.model_name)
         r_name = self.renderer_name or model_info.get_recommended_renderer_name(self.model_name)
-        renderer = PingyEffortRenderer(
+        renderer = PingiEffortRenderer(
             get_renderer(r_name, tok), thinking_mode=self.thinking_mode
         )
 
@@ -146,24 +146,24 @@ class PingySFTDatasetBuilder(SupervisedDatasetBuilder):
 
         if len(datums) >= 10 and self.eval_fraction > 0:
             n_eval = max(1, int(len(datums) * self.eval_fraction))
-            eval_ds: SupervisedDataset | None = PingySFTDataset(datums[:n_eval], self.batch_size)
-            train_ds = PingySFTDataset(datums[n_eval:], self.batch_size)
+            eval_ds: SupervisedDataset | None = PingiSFTDataset(datums[:n_eval], self.batch_size)
+            train_ds = PingiSFTDataset(datums[n_eval:], self.batch_size)
         else:
-            train_ds = PingySFTDataset(datums, self.batch_size)
+            train_ds = PingiSFTDataset(datums, self.batch_size)
             eval_ds = None
 
         logger.info(
-            "Built PINGY SFT dataset: %d train examples, %d eval examples (thinking=%s)",
+            "Built PINGI SFT dataset: %d train examples, %d eval examples (thinking=%s)",
             len(train_ds._datums),
-            len(eval_ds._datums) if isinstance(eval_ds, PingySFTDataset) else 0,
+            len(eval_ds._datums) if isinstance(eval_ds, PingiSFTDataset) else 0,
             self.thinking_mode,
         )
         return train_ds, eval_ds
 
 
 @chz.chz
-class PingySFTConfig:
-    """CLI configuration for PINGY Stage 1 SFT cold-start on Tinker."""
+class PingiSFTConfig:
+    """CLI configuration for PINGI Stage 1 SFT cold-start on Tinker."""
 
     jsonl_path: str = "./artifacts/sft_verified_traces.jsonl"
     model_name: str = "thinkingmachines/Inkling-2-Mini"
@@ -176,7 +176,7 @@ class PingySFTConfig:
     min_score: float = 1.0
     load_checkpoint_path: str | None = None
     log_path: str | None = None
-    wandb_project: str | None = "pingy"
+    wandb_project: str | None = "pingi"
     wandb_name: str | None = None
     save_every: int = 20
     eval_every: int = 20
@@ -184,14 +184,14 @@ class PingySFTConfig:
     behavior_if_log_dir_exists: cli_utils.LogdirBehavior = "ask"
 
 
-async def run(cfg: PingySFTConfig) -> None:
+async def run(cfg: PingiSFTConfig) -> None:
     effort = resolve_thinking_effort(cfg.thinking_mode)
-    logger.info("PINGY SFT thinking_mode=%s (effort=%.1f)", cfg.thinking_mode, effort)
+    logger.info("PINGI SFT thinking_mode=%s (effort=%.1f)", cfg.thinking_mode, effort)
 
-    run_name = f"pingy-sft-{cfg.thinking_mode}-r{cfg.lora_rank}-{datetime.now().strftime('%Y%m%d-%H%M')}"
-    log_path = cfg.log_path or cli_utils.runs_path("pingy_sft", run_name)
+    run_name = f"pingi-sft-{cfg.thinking_mode}-r{cfg.lora_rank}-{datetime.now().strftime('%Y%m%d-%H%M')}"
+    log_path = cfg.log_path or cli_utils.runs_path("pingi_sft", run_name)
 
-    dataset_builder = PingySFTDatasetBuilder(
+    dataset_builder = PingiSFTDatasetBuilder(
         jsonl_path=cfg.jsonl_path,
         model_name=cfg.model_name,
         thinking_mode=cfg.thinking_mode,
@@ -202,7 +202,7 @@ async def run(cfg: PingySFTConfig) -> None:
     train_cfg = sl_train.Config(
         log_path=log_path,
         model_name=cfg.model_name,
-        recipe_name="pingy_sft_warmup",
+        recipe_name="pingi_sft_warmup",
         load_checkpoint_path=cfg.load_checkpoint_path,
         dataset_builder=dataset_builder,
         learning_rate=cfg.learning_rate,
@@ -221,7 +221,7 @@ async def run(cfg: PingySFTConfig) -> None:
 def entrypoint() -> None:
     load_dotenv()
     logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(name)s: %(message)s")
-    cfg = chz.entrypoint(PingySFTConfig)
+    cfg = chz.entrypoint(PingiSFTConfig)
     asyncio.run(run(cfg))
 
 

@@ -1,4 +1,4 @@
-"""Harbor task loading for PINGY (local cache + Hugging Face harness-hub datasets).
+"""Harbor task loading for PINGI (local cache + Hugging Face harness-hub datasets).
 
 Supports all 3 Harbor task layouts used across Terminal-Bench 2.0, scale800-harbor,
 and termgrade-train-harbor:
@@ -22,7 +22,7 @@ HARBOR_CACHE_DIR = Path.home() / ".cache" / "harbor" / "tasks"
 
 
 @dataclass(frozen=True)
-class PingyTask:
+class PingiTask:
     """A single Harbor task directory."""
 
     task_name: str
@@ -97,13 +97,13 @@ def _discover_task_dirs(root: Path) -> list[Path]:
     return found
 
 
-def load_tasks_from_dir(root: Path, source: str = "local") -> list[PingyTask]:
-    tasks: list[PingyTask] = []
+def load_tasks_from_dir(root: Path, source: str = "local") -> list[PingiTask]:
+    tasks: list[PingiTask] = []
     for task_dir in _discover_task_dirs(root):
         toml_path = task_dir / "task.toml"
         cfg = tomllib.loads(toml_path.read_text(encoding="utf-8")) if toml_path.is_file() else {}
         tasks.append(
-            PingyTask(
+            PingiTask(
                 task_name=task_dir.name,
                 instruction=(task_dir / "instruction.md").read_text(encoding="utf-8"),
                 task_dir=task_dir,
@@ -115,7 +115,7 @@ def load_tasks_from_dir(root: Path, source: str = "local") -> list[PingyTask]:
     return tasks
 
 
-def load_local_harbor_dataset(dataset_name: str) -> list[PingyTask]:
+def load_local_harbor_dataset(dataset_name: str) -> list[PingiTask]:
     """Load tasks downloaded with `uvx harbor datasets download ...`."""
     root = HARBOR_CACHE_DIR / dataset_name
     tasks = load_tasks_from_dir(root, source=dataset_name)
@@ -127,7 +127,7 @@ def load_local_harbor_dataset(dataset_name: str) -> list[PingyTask]:
     return tasks
 
 
-def sync_hf_harbor_dataset(repo_id: str, cache_root: Path | None = None) -> list[PingyTask]:
+def sync_hf_harbor_dataset(repo_id: str, cache_root: Path | None = None) -> list[PingiTask]:
     """Load a Hugging Face Harbor dataset from the local cache.
 
     Do not download here. Large Hub snapshots time out inside a training job.
@@ -149,9 +149,9 @@ def sync_hf_harbor_dataset(repo_id: str, cache_root: Path | None = None) -> list
     return tasks
 
 
-def load_datasets_spec(spec: str) -> list[list[PingyTask]]:
+def load_datasets_spec(spec: str) -> list[list[PingiTask]]:
     """Parse a comma-separated list of local Harbor dataset names or HF dataset repo IDs."""
-    groups: list[list[PingyTask]] = []
+    groups: list[list[PingiTask]] = []
     for raw in spec.split(","):
         item = raw.strip()
         if not item:
@@ -165,16 +165,16 @@ def load_datasets_spec(spec: str) -> list[list[PingyTask]]:
     return groups
 
 
-def interleave_tasks(task_groups: list[list[PingyTask]], *, seed: int = 42) -> list[PingyTask]:
+def interleave_tasks(task_groups: list[list[PingiTask]], *, seed: int = 42) -> list[PingiTask]:
     """Deterministically shuffle within each source, then round-robin interleave."""
     rng = random.Random(seed)
-    shuffled: list[list[PingyTask]] = []
+    shuffled: list[list[PingiTask]] = []
     for group in task_groups:
         g = list(group)
         rng.shuffle(g)
         shuffled.append(g)
 
-    interleaved: list[PingyTask] = []
+    interleaved: list[PingiTask] = []
     max_len = max((len(g) for g in shuffled), default=0)
     for i in range(max_len):
         for g in shuffled:
@@ -184,14 +184,14 @@ def interleave_tasks(task_groups: list[list[PingyTask]], *, seed: int = 42) -> l
 
 
 def split_train_dev_heldout(
-    task_groups: list[list[PingyTask]],
+    task_groups: list[list[PingiTask]],
     *,
     dev_fraction: float = 0.05,
     heldout_fraction: float = 0.05,
     max_dev_tasks: int = 16,
     max_heldout_tasks: int = 32,
     seed: int = 42,
-) -> tuple[list[PingyTask], list[PingyTask], list[PingyTask]]:
+) -> tuple[list[PingiTask], list[PingiTask], list[PingiTask]]:
     """Split into train, in-loop dev, and a held-out set never used to pick checkpoints."""
     interleaved = interleave_tasks(task_groups, seed=seed)
     if len(interleaved) < 3:
@@ -219,12 +219,12 @@ def split_train_dev_heldout(
 
 
 def interleave_and_split(
-    task_groups: list[list[PingyTask]],
+    task_groups: list[list[PingiTask]],
     *,
     eval_fraction: float = 0.05,
     max_eval_tasks: int = 32,
     seed: int = 42,
-) -> tuple[list[PingyTask], list[PingyTask]]:
+) -> tuple[list[PingiTask], list[PingiTask]]:
     """Train/dev split. Held-out tasks are not included; use `split_train_dev_heldout`."""
     train, dev, _heldout = split_train_dev_heldout(
         task_groups,

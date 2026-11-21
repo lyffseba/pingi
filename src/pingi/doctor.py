@@ -1,4 +1,4 @@
-"""Pre-flight diagnostics for PINGY (`uv run pingy-doctor`)."""
+"""Pre-flight diagnostics for PINGI (`uv run pingi-doctor`)."""
 
 from __future__ import annotations
 
@@ -9,9 +9,9 @@ from pathlib import Path
 
 from dotenv import load_dotenv
 
-from pingy.datasets import HARBOR_CACHE_DIR, load_tasks_from_dir
-from pingy.pi_tools import PI_SYSTEM_PROMPT, PiSandboxTools
-from pingy.thinking import PingyEffortRenderer
+from pingi.datasets import HARBOR_CACHE_DIR, load_tasks_from_dir
+from pingi.pi_tools import PI_SYSTEM_PROMPT, PiSandboxTools
+from pingi.thinking import PingiEffortRenderer
 
 
 def _check_mark(ok: bool) -> str:
@@ -20,7 +20,7 @@ def _check_mark(ok: bool) -> str:
 
 def entrypoint() -> None:
     load_dotenv()
-    print("=== PINGY Pre-Flight Doctor ===\n")
+    print("=== PINGI Pre-Flight Doctor ===\n")
 
     # 1. API Keys
     tinker_ok = bool(os.environ.get("TINKER_API_KEY"))
@@ -52,7 +52,7 @@ def entrypoint() -> None:
         rec = model_info.get_recommended_renderer_name(model_name)
         tok = tokenizer_utils.get_tokenizer(model_name)
         base = get_renderer(rec, tok)
-        r_none = PingyEffortRenderer(base, thinking_mode="none")
+        r_none = PingiEffortRenderer(base, thinking_mode="none")
         tools = PiSandboxTools(sandbox=None, workdir="/app")
         prefix = r_none.create_conversation_prefix_with_tools(
             tools=tools.tool_specs(), system_prompt=PI_SYSTEM_PROMPT
@@ -108,11 +108,11 @@ def entrypoint() -> None:
 
     print("\nNext step:")
     if not tinker_ok:
-        print("  1. Paste TINKER_API_KEY into pingy/.env")
+        print("  1. Paste TINKER_API_KEY into pingi/.env")
         print("  2. Start Docker Desktop (for `preset=smoke`) OR run `uv run modal setup` (for `preset=pilot` / `mvp`)")
-        print("  3. Run: uv run pingy-rl preset=smoke   (~$0.25) -> uv run pingy-rl preset=pilot   (~$7)")
+        print("  3. Run: uv run pingi-rl preset=smoke   (~$0.25) -> uv run pingi-rl preset=pilot   (~$7)")
     else:
-        print("  Ready! Run: uv run pingy-rl preset=smoke   (~$0.25) -> uv run pingy-rl preset=pilot   (~$7)")
+        print("  Ready! Run: uv run pingi-rl preset=smoke   (~$0.25) -> uv run pingi-rl preset=pilot   (~$7)")
 
 
 if __name__ == "__main__":

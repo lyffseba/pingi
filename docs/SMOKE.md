@@ -1,11 +1,11 @@
-# Smoke run: pingy-smo
+# Smoke run: pingi-smo
 
 Completed 2026-11-21.
 
 ## What ran
 
 ```sh
-uv run pingy-rl preset=smoke behavior_if_log_dir_exists=delete wandb_project=None session_name=pingy-smo
+uv run pingi-rl preset=smoke behavior_if_log_dir_exists=delete wandb_project=None session_name=pingi-smo
 ```
 
 - Model: `thinkingmachines/Inkling-2-Mini`
@@ -13,11 +13,11 @@ uv run pingy-rl preset=smoke behavior_if_log_dir_exists=delete wandb_project=Non
 - 3 steps, 2 groups x 2 rollouts, `eval_every=0`
 - Dataset: local `terminal-bench-2.0`
 - Sandbox: Docker
-- Local log: `/Users/juan.gallego/tinker-runs/pingy/pingy-smoke-none-r32-lr1e-05-g2x2-20261121-0847`
+- Local log: `/Users/juan.gallego/tinker-runs/pingi/pingi-smoke-none-r32-lr1e-05-g2x2-20261121-0847`
 
 ## Tinker console
 
-The run is session `e7bba24a-6366-5c8c-93b8-21e624a621a6`, display name `pingy-smo`.
+The run is session `e7bba24a-6366-5c8c-93b8-21e624a621a6`, display name `pingi-smo`.
 
 https://tinker-console.thinkingmachines.ai
 
@@ -28,7 +28,7 @@ Checkpoints:
 
 ## Hugging Face
 
-https://huggingface.co/lyffseba/pingy-smo
+https://huggingface.co/lyffseba/pingi-smo
 
 The Hub repo is the run record. The actual checkpoint is published on Tinker, not uploaded as safetensors, because Tinker returns `403 Checkpoint downloads are disabled for base model thinkingmachines/Inkling-2-Mini`.
 
