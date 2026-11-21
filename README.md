@@ -77,7 +77,7 @@ Full `Qwen3.8-27B-pi-adapted` training mixture (`scale800` + `termgrade`, downlo
 | Preset | Command | Rollouts | Approx. Cost | Goal |
 |---|---|---:|---:|---|
 | **`smoke`** | `uv run pingi-rl preset=smoke` | 20 (`2×2×5`, Docker) | **~$0.25** | Verify Tinker + tools + Docker end-to-end |
-| **`pilot`** | `uv run pingi-rl preset=pilot` | 640 (`4×8×20`, Modal free tier) | **~$7** | Half-MVP on `scale800 + termgrade`; resumes cleanly into `mvp` with zero wasted spend |
+| **`pilot`** | `PINGI_MODAL_ENVIRONMENT=pingi uv run pingi-rl preset=pilot session_name=pingi-pilot wandb_project=None` | 640 (`4×8×20`, Modal environment `pingi`) | **~$7** | Half-MVP on `scale800 + termgrade`. Final run session name is `pingi`. See [docs/PILOT.md](docs/PILOT.md). |
 | **`mvp`** | `uv run pingi-rl preset=mvp` | 1,600 (`4×8×50`, Modal) | **~$15 – $40** | Strong daily-driver PINGI on `scale800 + termgrade` |
 | **`full`** | `uv run pingi-rl preset=full` | 5,120 (`4×8×160`, Modal) | **~$75 – $135** | Full `Qwen3.8-27B-pi-adapted` scale |
 

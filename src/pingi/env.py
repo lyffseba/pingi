@@ -50,7 +50,12 @@ async def _modal_app() -> Any:
             import modal
 
             app_name = os.environ.get("PINGI_RESOURCE_NAME", "pingi")
-            _MODAL_APP = await modal.App.lookup.aio(app_name, create_if_missing=True)
+            environment_name = os.environ.get("PINGI_MODAL_ENVIRONMENT", "pingi")
+            _MODAL_APP = await modal.App.lookup.aio(
+                app_name,
+                create_if_missing=True,
+                environment_name=environment_name,
+            )
     return _MODAL_APP
 
 

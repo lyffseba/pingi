@@ -7,7 +7,7 @@ PINGI is designed to scale cleanly from a **$0.25 local smoke test** → **$7 pi
 | Component | Role | Link | Env Vars |
 |---|---|---|---|
 | **Tinker** | RL & SFT training on `thinkingmachines/Inkling-2-Mini` (`$0.15/1M` prefill, `$0.015/1M` cached, `$0.50/1M` sample, `$0.75/1M` train) | https://tinker-console.thinkingmachines.ai <br> https://tinker.thinkingmachines.ai/billing/balance | `TINKER_API_KEY` |
-| **Modal** | Parallel Harbor sandboxes (`preset=pilot`, `mvp`, `full`) | https://modal.com/settings/lyffseba/usage | `MODAL_TOKEN_ID`, `MODAL_TOKEN_SECRET` |
+| **Modal** | Parallel Harbor sandboxes in environment `pingi`, app `pingi`. Do not use environment `main` for this project. | https://modal.com/settings/lyffseba/usage | `MODAL_TOKEN_ID`, `MODAL_TOKEN_SECRET`, `PINGI_MODAL_ENVIRONMENT=pingi` |
 | **Local Docker** | Zero-cost sandboxes for `preset=smoke` | Docker Desktop | *(local daemon)* |
 | **Hugging Face** | Harbor datasets + model hub (`lyffseba/pingi`, `lyffseba/pingi-smo`) | https://huggingface.co/lyffseba | `HF_TOKEN` |
 | **GitHub** | Source of truth (`lyffseba/pingi`) + research notes (`lyffseba/xai`) | https://github.com/lyffseba/pingi | `gh` CLI |

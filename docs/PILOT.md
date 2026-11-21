@@ -1,22 +1,53 @@
 # Pilot setup
 
-The ~$7 run is:
+Names:
+
+| Thing | Name |
+|---|---|
+| Project, GitHub, Hugging Face, Modal app | `pingi` |
+| This ~$7 pilot | Tinker session `pingi-pilot` |
+| Final full run | Tinker session `pingi` |
+
+The pilot is 640 rollouts (`4 x 8 x 20`) of `harness-hub/scale800-harbor` and `harness-hub/termgrade-train-harbor` on Tinker. Thinking mode is `none`. Sandboxes run in the Modal environment `pingi`, not `main`.
 
 ```sh
-uv run pingi-rl preset=pilot session_name=pingi-pilot behavior_if_log_dir_exists=delete
+PINGI_MODAL_ENVIRONMENT=pingi uv run pingi-rl \
+  preset=pilot \
+  session_name=pingi-pilot \
+  wandb_name=pingi-pilot \
+  wandb_project=None \
+  behavior_if_log_dir_exists=delete
 ```
 
-That is 640 rollouts (`4 x 8 x 20`) of `harness-hub/scale800-harbor` and `harness-hub/termgrade-train-harbor` on Tinker, with Modal sandboxes. Thinking mode is `none`.
+`wandb_project=None` is intentional for this launch. The cookbook's hyperparameter upload crashed the previous Forge run before training started. Metrics still land in the local run directory.
 
 ## Required before launch
 
 | Piece | Status check | Where |
 |---|---|---|
 | Tinker | `TINKER_API_KEY` | https://tinker-console.thinkingmachines.ai |
-| Modal | `MODAL_TOKEN_ID` and `MODAL_TOKEN_SECRET` | https://modal.com/settings |
-| W&B | `WANDB_API_KEY` | https://wandb.ai/authorize |
+| Modal | `MODAL_TOKEN_ID` and `MODAL_TOKEN_SECRET`, environment `pingi` | https://modal.com/settings/lyffseba/usage |
+| Harbor tasks | already in `~/.cache/harbor/tasks/` | do not download inside the training process |
+| W&B | optional; this launch is local-only | https://forge.coreweave.com |
 
-`pingi-rl` refuses to start `preset=pilot` without Modal. If W&B is missing it still trains and writes local metrics, but there is no live chart.
+Download both Harbor datasets before training. `pingi-rl` only reads the local cache:
+
+```sh
+uv run hf download harness-hub/scale800-harbor --repo-type dataset --max-workers 2 \
+  --local-dir ~/.cache/harbor/tasks/harness-hub__scale800-harbor
+uv run hf download harness-hub/termgrade-train-harbor --repo-type dataset --max-workers 2 \
+  --local-dir ~/.cache/harbor/tasks/harness-hub__termgrade-train-harbor
+```
+
+## Modal
+
+Use environment `pingi`. In the old `main` environment, Modal created a sandbox ID and then reported the container already shut down (`NotFoundError`, error code `C0MJ62F2`) before any command could run. A new environment in the same workspace executes `echo` and Harbor `test.sh`. The code defaults to `PINGI_MODAL_ENVIRONMENT=pingi`.
+
+Sandbox creates are capped (`PINGI_MODAL_CONCURRENCY=2`) so AppGetOrCreate rate limits do not starve the Tinker heartbeat. One shared Modal app is looked up once.
+
+Local Docker is only the fallback for `termgrade-train-harbor`, which shares one image. Do not run `scale800-harbor` locally: it is 750 separate images.
+
+A clean start means stop the local `pingi-rl` process and terminate sandboxes in the `pingi` environment before launching again. Tinker keeps old sessions visible until they expire; the live one is the new `pingi-pilot` session.
 
 ## Reference Benchmarks
 
