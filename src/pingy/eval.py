@@ -1,0 +1,292 @@
+"""Paired Benchmark Evaluator for PINGY (`uv run pingy-eval`).
+
+Evaluates base `thinkingmachines/Inkling-2-Mini` and/or any trained PINGY Tinker
+checkpoint on the exact same Harbor tasks under `pi` tools, saving full JSONL
+results and printing a paired pass@1 + efficiency comparison table.
+"""
+
+from __future__ import annotations
+
+import asyncio
+import json
+import logging
+import statistics
+import time
+from dataclasses import asdict, dataclass
+from datetime import datetime
+from pathlib import Path
+from typing import Literal
+
+import chz
+import tinker
+from dotenv import load_dotenv
+from tinker_cookbook import model_info, tokenizer_utils
+from tinker_cookbook.completers import TinkerTokenCompleter
+from tinker_cookbook.renderers import get_renderer
+from tinker_cookbook.rl.rollout_runner import run_rollout
+from tinker_cookbook.tool_use import build_agent_tool_env
+
+from pingy.datasets import PingyTask, load_datasets_spec
+from pingy.docker_sandbox import docker_sandbox_factory
+from pingy.env import (
+    TaskSandboxFactory,
+    build_pingy_rollout_config,
+    initial_pi_messages,
+    initialize_task_sandbox,
+    modal_sandbox_factory,
+)
+from pingy.pi_tools import PiSandboxTools
+from pingy.reward import PingyHarborReward
+from pingy.thinking import DEFAULT_THINKING_MODE, PingyEffortRenderer, ThinkingMode
+
+logger = logging.getLogger(__name__)
+
+
+@dataclass
+class EvalTaskResult:
+    task_name: str
+    passed: bool
+    correctness: float
+    shaped_reward: float
+    turns: int
+    total_tool_calls: int
+    edit_calls: int
+    edit_failures: int
+    time_seconds: float
+    error: str | None = None
+
+
+@chz.chz
+class PingyEvalConfig:
+    """Evaluate base Inkling-2-Mini vs a PINGY Tinker checkpoint on Harbor tasks."""
+
+    model_name: str = "thinkingmachines/Inkling-2-Mini"
+    checkpoint_path: str | None = None  # e.g. tinker://.../weights/000020 (None = base only)
+    compare_with_base: bool = False  # True = run BOTH base and checkpoint on identical tasks
+    thinking_mode: ThinkingMode = DEFAULT_THINKING_MODE
+    datasets: str = "terminal-bench-2.0"
+    sandbox: Literal["modal", "docker"] = "docker"
+    max_tasks: int = 16
+    max_turns: int = 25
+    max_tokens: int = 4096
+    max_trajectory_tokens: int = 48 * 1024
+    temperature: float = 0.0
+    concurrency: int = 4
+    sandbox_timeout: int = 2400
+    command_timeout: int = 120
+    grader_timeout: int = 300
+    output_dir: str = "./artifacts/evals"
+    heldout_file: str | None = None
+    base_url: str | None = None
+
+
+async def _eval_one_task(
+    task: PingyTask,
+    policy: TinkerTokenCompleter,
+    renderer: PingyEffortRenderer,
+    sandbox_factory: TaskSandboxFactory,
+    cfg: PingyEvalConfig,
+    sem: asyncio.Semaphore,
+) -> EvalTaskResult:
+    start = time.monotonic()
+    async with sem:
+        sandbox = None
+        try:
+            sandbox = await sandbox_factory(task, cfg.sandbox_timeout)
+            workdir = await initialize_task_sandbox(sandbox, task)
+            pi_tools = PiSandboxTools(
+                sandbox=sandbox,
+                workdir=workdir,
+                default_command_timeout=cfg.command_timeout,
+            )
+            effective_grader_timeout = max(cfg.grader_timeout, task.verifier_timeout or 0)
+            rollout_cfg = build_pingy_rollout_config(
+                max_turns=cfg.max_turns,
+                max_trajectory_tokens=cfg.max_trajectory_tokens,
+                grader_timeout=effective_grader_timeout,
+            )
+            reward_fn = PingyHarborReward(
+                tests_dir=task.task_dir / "tests",
+                sandbox=sandbox,
+                telemetry=pi_tools.telemetry,
+                grader_timeout=effective_grader_timeout,
+            )
+            env = build_agent_tool_env(
+                renderer=renderer,
+                tools=pi_tools.all_tools(),
+                initial_messages=initial_pi_messages(task, renderer, pi_tools, workdir),
+                reward_fn=reward_fn,
+                rollout_config=rollout_cfg,
+                model_name=cfg.model_name,
+                max_turns=cfg.max_turns,
+                max_trajectory_tokens=cfg.max_trajectory_tokens,
+                max_generation_tokens=cfg.max_tokens,
+            )
+            traj = await run_rollout(policy, env, config=rollout_cfg)
+            final_metrics: dict[str, float] = {}
+            for tr in reversed(traj.transitions):
+                if "correctness" in tr.metrics or "reward" in tr.metrics:
+                    final_metrics = dict(tr.metrics)
+                    break
+            correctness = float(final_metrics.get("correctness", 0.0))
+            shaped = float(final_metrics.get("reward", 0.0))
+            return EvalTaskResult(
+                task_name=task.task_name,
+                passed=correctness >= 1.0,
+                correctness=correctness,
+                shaped_reward=shaped,
+                turns=len(traj.transitions),
+                total_tool_calls=pi_tools.telemetry.total_calls,
+                edit_calls=pi_tools.telemetry.edit_calls,
+                edit_failures=pi_tools.telemetry.edit_failures,
+                time_seconds=round(time.monotonic() - start, 2),
+            )
+        except Exception as exc:
+            logger.exception("Eval failed on %s", task.task_name)
+            return EvalTaskResult(
+                task_name=task.task_name,
+                passed=False,
+                correctness=0.0,
+                shaped_reward=0.0,
+                turns=0,
+                total_tool_calls=0,
+                edit_calls=0,
+                edit_failures=0,
+                time_seconds=round(time.monotonic() - start, 2),
+                error=str(exc),
+            )
+        finally:
+            if sandbox is not None:
+                await sandbox.cleanup()
+
+
+def format_summary_table(
+    label_a: str,
+    results_a: list[EvalTaskResult],
+    label_b: str | None = None,
+    results_b: list[EvalTaskResult] | None = None,
+) -> str:
+    def _stats(rows: list[EvalTaskResult]) -> tuple[float, float, float, float]:
+        n = max(1, len(rows))
+        pass_rate = 100.0 * sum(1 for r in rows if r.passed) / n
+        med_turns = statistics.median([r.turns for r in rows]) if rows else 0.0
+        med_calls = statistics.median([r.total_tool_calls for r in rows]) if rows else 0.0
+        edits = sum(r.edit_calls for r in rows)
+        edit_err = (100.0 * sum(r.edit_failures for r in rows) / edits) if edits else 0.0
+        return pass_rate, med_turns, med_calls, edit_err
+
+    lines = [
+        "| Model | Tasks | Pass@1 | Median Turns | Median Tool Calls | Edit Error Rate |",
+        "|---|---:|---:|---:|---:|---:|",
+    ]
+    for lbl, rows in [(label_a, results_a)] + (
+        [(label_b, results_b)] if label_b and results_b is not None else []
+    ):
+        pr, mt, mc, ee = _stats(rows)
+        lines.append(f"| {lbl} | {len(rows)} | {pr:.1f}% | {mt:.1f} | {mc:.1f} | {ee:.1f}% |")
+
+    if label_b and results_b is not None:
+        by_a = {r.task_name: r.passed for r in results_a}
+        by_b = {r.task_name: r.passed for r in results_b}
+        common = sorted(set(by_a) & set(by_b))
+        newly_solved = sum(1 for t in common if not by_a[t] and by_b[t])
+        lost = sum(1 for t in common if by_a[t] and not by_b[t])
+        lines.append(
+            f"\nPaired diff ({label_b} vs {label_a} on {len(common)} tasks): "
+            f"+{newly_solved} newly solved / -{lost} lost."
+        )
+    return "\n".join(lines)
+
+
+async def _run_suite(
+    label: str,
+    sampling_client: tinker.SamplingClient,
+    tasks: list[PingyTask],
+    renderer: PingyEffortRenderer,
+    sandbox_factory: TaskSandboxFactory,
+    cfg: PingyEvalConfig,
+) -> list[EvalTaskResult]:
+    policy = TinkerTokenCompleter(
+        sampling_client=sampling_client,
+        max_tokens=cfg.max_tokens,
+        temperature=cfg.temperature,
+    )
+    sem = asyncio.Semaphore(cfg.concurrency)
+    logger.info("Running eval [%s] on %d tasks (thinking=%s)", label, len(tasks), cfg.thinking_mode)
+    return list(
+        await asyncio.gather(
+            *(_eval_one_task(t, policy, renderer, sandbox_factory, cfg, sem) for t in tasks)
+        )
+    )
+
+
+def _filter_heldout(tasks: list[PingyTask], heldout_file: str | None, max_tasks: int) -> list[PingyTask]:
+    if not heldout_file:
+        return tasks[:max_tasks]
+    rows = json.loads(Path(heldout_file).read_text(encoding="utf-8"))
+    wanted = {row["task_name"] for row in rows}
+    selected = [t for t in tasks if t.task_name in wanted]
+    missing = wanted - {t.task_name for t in selected}
+    if missing:
+        logger.warning("Held-out manifest has %d tasks not in the loaded datasets", len(missing))
+    return selected[:max_tasks]
+
+
+async def run(cfg: PingyEvalConfig) -> None:
+    groups = load_datasets_spec(cfg.datasets)
+    tasks = _filter_heldout([t for g in groups for t in g], cfg.heldout_file, cfg.max_tasks)
+    sandbox_factory = modal_sandbox_factory if cfg.sandbox == "modal" else docker_sandbox_factory
+
+    tok = tokenizer_utils.get_tokenizer(cfg.model_name)
+    r_name = model_info.get_recommended_renderer_name(cfg.model_name)
+    renderer = PingyEffortRenderer(get_renderer(r_name, tok), thinking_mode=cfg.thinking_mode)
+
+    service = tinker.ServiceClient(base_url=cfg.base_url)
+
+    out_dir = Path(cfg.output_dir) / datetime.now().strftime("%Y%m%d-%H%M%S")
+    out_dir.mkdir(parents=True, exist_ok=True)
+
+    if cfg.checkpoint_path and cfg.compare_with_base:
+        base_client = service.create_sampling_client(base_model=cfg.model_name).result()
+        pingy_client = service.create_sampling_client(
+            model_path=cfg.checkpoint_path, base_model=cfg.model_name
+        ).result()
+        res_base = await _run_suite("base", base_client, tasks, renderer, sandbox_factory, cfg)
+        res_pingy = await _run_suite("pingy", pingy_client, tasks, renderer, sandbox_factory, cfg)
+        (out_dir / "base.jsonl").write_text(
+            "\n".join(json.dumps(asdict(r)) for r in res_base) + "\n", encoding="utf-8"
+        )
+        (out_dir / "pingy.jsonl").write_text(
+            "\n".join(json.dumps(asdict(r)) for r in res_pingy) + "\n", encoding="utf-8"
+        )
+        table = format_summary_table("Inkling-2-Mini (base)", res_base, "PINGY", res_pingy)
+    elif cfg.checkpoint_path:
+        pingy_client = service.create_sampling_client(
+            model_path=cfg.checkpoint_path, base_model=cfg.model_name
+        ).result()
+        res_pingy = await _run_suite("pingy", pingy_client, tasks, renderer, sandbox_factory, cfg)
+        (out_dir / "pingy.jsonl").write_text(
+            "\n".join(json.dumps(asdict(r)) for r in res_pingy) + "\n", encoding="utf-8"
+        )
+        table = format_summary_table("PINGY", res_pingy)
+    else:
+        base_client = service.create_sampling_client(base_model=cfg.model_name).result()
+        res_base = await _run_suite("base", base_client, tasks, renderer, sandbox_factory, cfg)
+        (out_dir / "base.jsonl").write_text(
+            "\n".join(json.dumps(asdict(r)) for r in res_base) + "\n", encoding="utf-8"
+        )
+        table = format_summary_table("Inkling-2-Mini (base)", res_base)
+
+    (out_dir / "summary.md").write_text(table + "\n", encoding="utf-8")
+    print("\n" + table + f"\n\nSaved detailed results to {out_dir}")
+
+
+def entrypoint() -> None:
+    load_dotenv()
+    logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(name)s: %(message)s")
+    cfg = chz.entrypoint(PingyEvalConfig)
+    asyncio.run(run(cfg))
+
+
+if __name__ == "__main__":
+    entrypoint()

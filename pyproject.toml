@@ -1,0 +1,46 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "pingy"
+version = "0.1.0"
+description = "PINGY: Pi-native Inkling-2-Mini trained with agentic RL on Tinker + Harbor"
+readme = "README.md"
+requires-python = ">=3.12"
+license = { text = "Apache-2.0" }
+dependencies = [
+    "tinker-cookbook[modal]>=0.7.1",
+    "chz>=0.3.0",
+    "datasets>=3.2.0",
+    "huggingface_hub>=1.22.0",
+    "openai>=1.60.0",
+    "pydantic>=2.10.0",
+    "python-dotenv>=1.0.1",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=8.3.0",
+    "pytest-asyncio>=0.24.0",
+    "ruff>=0.9.0",
+]
+
+[project.scripts]
+pingy-rl = "pingy.train_rl:entrypoint"
+pingy-sft = "pingy.train_sft:entrypoint"
+pingy-eval = "pingy.eval:entrypoint"
+pingy-export = "pingy.export_and_publish:entrypoint"
+pingy-mine = "pingy.mine_sft_modular:entrypoint"
+pingy-doctor = "pingy.doctor:entrypoint"
+pingy-resume = "pingy.resume:entrypoint"
+
+[tool.hatch.metadata]
+allow-direct-references = true
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/pingy"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+asyncio_default_fixture_loop_scope = "function"

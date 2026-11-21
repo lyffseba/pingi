@@ -1,0 +1,45 @@
+{
+  "providers": {
+    "pingy-vllm": {
+      "baseUrl": "http://localhost:8000/v1",
+      "api": "openai-completions",
+      "apiKey": "dummy",
+      "models": [
+        {
+          "id": "pingy",
+          "name": "PINGY (No-Thinking - Default)"
+        },
+        {
+          "id": "pingy-high",
+          "name": "PINGY (High Thinking)"
+        }
+      ]
+    },
+    "pingy-llama-mac": {
+      "baseUrl": "http://localhost:9931/v1",
+      "api": "openai-completions",
+      "apiKey": "dummy",
+      "models": [
+        {
+          "id": "pingy",
+          "name": "PINGY Local (Llama.app / llama.cpp)"
+        }
+      ]
+    },
+    "modular": {
+      "baseUrl": "https://api.modular.com/v1",
+      "api": "openai-completions",
+      "apiKey": "$MODULAR_API_KEY",
+      "models": [
+        {
+          "id": "deepseek/deepseek-v4.1-flash-1017",
+          "name": "DeepSeek V4.1 Flash (Modular Cloud)"
+        },
+        {
+          "id": "qwen/qwen3.8-27b",
+          "name": "Qwen3.8 27B NVFP4 (Modular Cloud)"
+        }
+      ]
+    }
+  }
+}
