@@ -68,14 +68,30 @@ class DockerSandbox:
                         )
                         _, err = await pull.communicate()
                         if pull.returncode != 0:
+                            err_text = err.decode(errors="replace")
+                            if "no matching manifest" in err_text or "no match for platform" in err_text:
+                                pull_amd64 = await asyncio.create_subprocess_exec(
+                                    "docker",
+                                    "pull",
+                                    "--platform",
+                                    "linux/amd64",
+                                    image,
+                                    stdout=asyncio.subprocess.PIPE,
+                                    stderr=asyncio.subprocess.PIPE,
+                                )
+                                _, err_amd64 = await pull_amd64.communicate()
+                                if pull_amd64.returncode == 0:
+                                    _BUILT_IMAGES.add(image)
+                                    return image
+                                err_text = err_amd64.decode(errors="replace")
                             if task.dockerfile_path is None:
                                 raise RuntimeError(
-                                    f"docker pull {image} failed: {err.decode(errors='replace')}"
+                                    f"docker pull {image} failed: {err_text}"
                                 )
                             logger.warning(
                                 "docker pull %s failed (%s); falling back to Dockerfile",
                                 image,
-                                err.decode(errors="replace").strip()[:200],
+                                err_text.strip()[:200],
                             )
                         else:
                             _BUILT_IMAGES.add(image)

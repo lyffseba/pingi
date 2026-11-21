@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import asyncio
 import logging
+import os
 import shlex
 from collections.abc import Awaitable, Callable, Sequence
 from typing import Any
@@ -33,11 +34,31 @@ logger = logging.getLogger(__name__)
 TaskSandboxFactory = Callable[[PingyTask, int], Awaitable[SandboxInterface]]
 
 
+_MODAL_APP: Any = None
+_MODAL_APP_LOCK = asyncio.Lock()
+_MODAL_CREATE_LOCK = asyncio.Semaphore(int(os.environ.get("PINGY_MODAL_CONCURRENCY", "2")))
+_SETUP_SEMAPHORE = asyncio.Semaphore(int(os.environ.get("PINGY_SETUP_CONCURRENCY", "8")))
+
+
+async def _modal_app() -> Any:
+    """Look up the shared Modal app once. Parallel lookups hit AppGetOrCreate rate limits."""
+    global _MODAL_APP
+    if _MODAL_APP is not None:
+        return _MODAL_APP
+    async with _MODAL_APP_LOCK:
+        if _MODAL_APP is None:
+            import modal
+
+            _MODAL_APP = await modal.App.lookup.aio("pingy", create_if_missing=True)
+    return _MODAL_APP
+
+
 async def modal_sandbox_factory(task: PingyTask, timeout: int) -> SandboxInterface:
     """Create a Modal sandbox for a Harbor task.
 
     Prefers prebuilt `docker_image` from `task.toml` (instant start for scale800
     and termgrade-train-harbor), falling back to building `environment/Dockerfile`.
+    Sandbox creates are capped so Modal rate limits do not starve the Tinker heartbeat.
     """
     import modal
 
@@ -52,7 +73,15 @@ async def modal_sandbox_factory(task: PingyTask, timeout: int) -> SandboxInterfa
         raise RuntimeError(
             f"Task {task.task_name} has neither docker_image nor environment/Dockerfile."
         )
-    return await ModalSandbox.create(image=image, timeout=timeout, app_name="pingy")
+    async with _MODAL_CREATE_LOCK:
+        app = await _modal_app()
+        sandbox = await modal.Sandbox.create.aio(app=app, image=image, timeout=timeout)
+    return ModalSandbox(
+        timeout=timeout,
+        image=image,
+        app=app,
+        sandbox=sandbox,
+    )
 
 
 async def initialize_task_sandbox(sandbox: Any, task: PingyTask) -> str:
@@ -82,12 +111,14 @@ async def initialize_task_sandbox(sandbox: Any, task: PingyTask) -> str:
         await sandbox.write_file(
             setup_target, setup_script.read_bytes(), executable=True, timeout=60
         )
-        setup_res = await sandbox.run_command(
-            f"bash {shlex.quote(setup_target)} > /tmp/pingy_setup.log 2>&1; "
-            f"rc=$?; rm -f {shlex.quote(setup_target)}; exit $rc",
-            workdir=workdir,
-            timeout=900,
-        )
+        setup_res = None
+        async with _SETUP_SEMAPHORE:
+            setup_res = await sandbox.run_command(
+                f"bash {shlex.quote(setup_target)} > /tmp/pingy_setup.log 2>&1; "
+                f"rc=$?; rm -f {shlex.quote(setup_target)}; exit $rc",
+                workdir=workdir,
+                timeout=900,
+            )
         if setup_res.exit_code != 0:
             logger.warning(
                 "setup.sh for task %s exited with %d (see /tmp/pingy_setup.log)",

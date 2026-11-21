@@ -53,7 +53,7 @@ PRESETS: dict[str, dict[str, object]] = {
         "max_steps": 20,
         "eval_every": 5,
         "save_every": 5,
-        "sampling_steps_ahead": 2,
+        "sampling_steps_ahead": None,
     },
     # ~$15-$40 Strong MVP (1,600 rollouts: 4x8x50)
     "mvp": {

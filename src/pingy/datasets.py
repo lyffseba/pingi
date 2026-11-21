@@ -128,19 +128,24 @@ def load_local_harbor_dataset(dataset_name: str) -> list[PingyTask]:
 
 
 def sync_hf_harbor_dataset(repo_id: str, cache_root: Path | None = None) -> list[PingyTask]:
-    """Snapshot a Hugging Face Harbor dataset (e.g. harness-hub/scale800-harbor) locally."""
-    from huggingface_hub import snapshot_download
+    """Load a Hugging Face Harbor dataset from the local cache.
 
+    Do not download here. Large Hub snapshots time out inside a training job.
+    Download first with the official CLI, then rerun training:
+
+        uv run hf download <repo_id> --repo-type dataset --max-workers 2 \
+            --local-dir ~/.cache/harbor/tasks/<repo_id with / replaced by __>
+    """
     target = (cache_root or HARBOR_CACHE_DIR) / repo_id.replace("/", "__")
-    snapshot_download(
-        repo_id=repo_id,
-        repo_type="dataset",
-        local_dir=str(target),
-    )
     tasks = load_tasks_from_dir(target, source=repo_id)
     if not tasks:
-        raise RuntimeError(f"Downloaded {repo_id} to {target}, but found 0 valid Harbor tasks.")
-    logger.info("Loaded %d Harbor tasks from HF dataset %s", len(tasks), repo_id)
+        raise FileNotFoundError(
+            f"No Harbor tasks in {target}. Download them first, outside training:\n"
+            f"  uv run hf download {repo_id} --repo-type dataset --max-workers 2 \
+"
+            f"    --local-dir {target}"
+        )
+    logger.info("Loaded %d Harbor tasks from %s", len(tasks), target)
     return tasks
 
 
