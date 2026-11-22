@@ -1,0 +1,30 @@
+{
+  "kind": "paired_heldout_pilot",
+  "date": "2026-11-22",
+  "local_eval_id": "20261122-073637",
+  "base_model": "thinkingmachines/Inkling-2-Mini",
+  "checkpoint_path": "tinker://00751c13-86fd-503f-99f9-e4db8ba28e63:train:0/sampler_weights/final",
+  "checkpoint_access": "private",
+  "eval_settings": {
+    "thinking_mode": "none",
+    "temperature": 0.0,
+    "max_tasks": 20,
+    "max_turns": 25,
+    "max_tokens": 4096,
+    "max_trajectory_tokens": 49152,
+    "sandbox": "modal",
+    "concurrency": 4
+  },
+  "paired_counts": {
+    "both_passed": 10,
+    "pilot_only": 1,
+    "base_only": 0,
+    "neither_passed": 9,
+    "task_errors": 0
+  },
+  "sha256": {
+    "heldout_tasks.json": "c805f74749e67822093a5e756e1e5391c1eed699df6d80b2fdbf572b4809a410",
+    "base.jsonl": "9f1cc46315d25c7c2de79231c652fe79fc19c895875835f2615b10a1208bf143",
+    "pingi.jsonl": "4d4d10a64b1b308cf89d86bbf4cb456a7e18eb77ba29d98b94d8ab74348ca16e"
+  }
+}

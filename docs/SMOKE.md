@@ -1,6 +1,6 @@
 # Smoke run: pingi-smo
 
-Completed 2026-11-21.
+Completed 2026-11-21. This was an infrastructure check, not a benchmark. See the [completed pilot report](PILOT.md) for the separate held-out comparison.
 
 ## What ran
 
@@ -17,7 +17,7 @@ uv run pingi-rl preset=smoke behavior_if_log_dir_exists=delete wandb_project=Non
 
 ## Tinker console
 
-The run is session `e7bba24a-6366-5c8c-93b8-21e624a621a6`, display name `pingi-smo`.
+The run is session `e7bba24a-6366-5c8c-93b8-21e624a621a6`. The public record is `pingi-smo`; the original Tinker display name remains `pingy-smo`.
 
 https://tinker-console.thinkingmachines.ai
 

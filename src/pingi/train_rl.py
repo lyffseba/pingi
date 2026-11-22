@@ -43,7 +43,7 @@ PRESETS: dict[str, dict[str, object]] = {
         "save_every": 3,
         "sampling_steps_ahead": None,
     },
-    # ~$7 Half-MVP Pilot on Tinker + $0 Modal free tier (640 rollouts: 4x8x20, resumes cleanly into mvp)
+    # Pilot: 640 nominal rollouts (4x8x20). See docs/PILOT.md for measured spend.
     "pilot": {
         "sandbox": "modal",
         "datasets": "harness-hub/scale800-harbor,harness-hub/termgrade-train-harbor",
@@ -98,7 +98,7 @@ _CUSTOM_DEFAULTS: dict[str, object] = {
 class PingiRLConfig:
     """CLI configuration for PINGI agentic RL on Tinker."""
 
-    # Budget preset: "smoke" (~$0.25), "pilot" (~$7), "mvp" (~$15-$40), "full" (~$75-$135), or "custom"
+    # Schedule preset: "smoke", "pilot", "mvp", "full", or "custom" (not a spending cap).
     preset: PresetName = "custom"
 
     # Base model (64K train / 1M sample = $0.15 prefill, $0.015 cached, $0.50 sample, $0.75 train)

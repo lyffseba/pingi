@@ -12,6 +12,10 @@ specifically for the [`pi`](https://pi.dev/) coding agent harness using **Tinker
 | Companion research (`xai`) | https://github.com/lyffseba/xai · https://huggingface.co/spaces/lyffseba/xai |
 | Docs | [docs/SMOKE.md](docs/SMOKE.md) · [docs/PILOT.md](docs/PILOT.md) · [docs/BENCHMARKS.md](docs/BENCHMARKS.md) · [docs/INFRA.md](docs/INFRA.md) |
 
+## Pilot complete — project paused
+
+On 20 matched held-out Harbor tasks, `pingi-pilot` solved **11/20 (55%)** versus **10/20 (50%)** for base Inkling-2-Mini: one additional solve, none lost. That is a preliminary result, not a broader benchmark claim. The pilot ran 20 training batches and recorded **$18.73** in Tinker training-run cost, excluding Modal and the separate paired evaluation. Final checkpoints are saved privately on Tinker; **only the pilot report and scores are public**. See the [build log, protocol, and evidence](docs/PILOT.md).
+
 ## Design Decisions
 
 1. **Best RL Backend = Tinker**: Thinking Machines hosts `thinkingmachines/Inkling-2-Mini` natively on Tinker
@@ -66,7 +70,7 @@ Fast starter set (Terminal-Bench 2.0):
 uvx harbor datasets download terminal-bench@2.0 -o ~/.cache/harbor/tasks/terminal-bench-2.0
 ```
 
-Full `Qwen3.8-27B-pi-adapted` training mixture (`scale800` + `termgrade`, downloaded automatically when passed to `pingi-rl`):
+Training mixture (`scale800` + `termgrade`): [populate the local Harbor cache](docs/PILOT.md#reproduce-the-setup) before running `pingi-rl`.
 - `harness-hub/scale800-harbor`
 - `harness-hub/termgrade-train-harbor`
 
@@ -74,18 +78,14 @@ Full `Qwen3.8-27B-pi-adapted` training mixture (`scale800` + `termgrade`, downlo
 
 ## 4. Run PINGI Training (Budget Ladder — Non-Thinking Default)
 
-| Preset | Command | Rollouts | Approx. Cost | Goal |
+| Preset | Command | Nominal rollouts | Tinker cost | Goal |
 |---|---|---:|---:|---|
-| **`smoke`** | `uv run pingi-rl preset=smoke` | 20 (`2×2×5`, Docker) | **~$0.25** | Verify Tinker + tools + Docker end-to-end |
-| **`pilot`** | `PINGI_MODAL_ENVIRONMENT=pingi uv run pingi-rl preset=pilot session_name=pingi-pilot wandb_project=None` | 640 (`4×8×20`, Modal environment `pingi`) | **~$7** | Half-MVP on `scale800 + termgrade`. Final run session name is `pingi`. See [docs/PILOT.md](docs/PILOT.md). |
+| **`smoke`** | `uv run pingi-rl preset=smoke` | 12 (`2×2×3`, Docker) | **~$0.25** (estimate) | Verify Tinker + tools + Docker end-to-end |
+| **`pilot`** | `PINGI_MODAL_ENVIRONMENT=pingi uv run pingi-rl preset=pilot session_name=pingi-pilot wandb_project=None` | 640 (`4×8×20`, Modal environment `pingi`) | **$18.73** (recorded) | Completed; see the [pilot report](docs/PILOT.md). |
 | **`mvp`** | `uv run pingi-rl preset=mvp` | 1,600 (`4×8×50`, Modal) | **~$15 – $40** | Strong daily-driver PINGI on `scale800 + termgrade` |
 | **`full`** | `uv run pingi-rl preset=full` | 5,120 (`4×8×160`, Modal) | **~$75 – $135** | Full `Qwen3.8-27B-pi-adapted` scale |
 
-Resume directly from your **$7 pilot** checkpoint into **MVP** (so every dollar of the pilot carries forward!):
-
-```bash
-uv run pingi-rl preset=mvp load_checkpoint_path=tinker://<your-pilot-run>/weights/000020
-```
+Costs above exclude Modal and standalone evaluation; estimates are not spending caps. The MVP and full presets have not been run. The pilot can warm-start a later run from its private `weights/final` checkpoint. The final full run is reserved as session `pingi`.
 
 ### Optional: Train a `High-Thinking` (`high`) Variant Later
 
@@ -110,27 +110,10 @@ uv run pingi-rl preset=pilot load_checkpoint_path=tinker://<your-sft-run>/weight
 
 ## 5. Paired Benchmark Evaluation (Base vs PINGI)
 
-Run both base `Inkling-2-Mini` and your PINGI checkpoint on the exact same held-out tasks and print a paired pass@1 + turns + `edit`-error table:
-
-```bash
-uv run pingi-eval \
-  checkpoint_path=tinker://<your-run>/weights/000020 \
-  compare_with_base=True \
-  datasets=terminal-bench-2.0 \
-  sandbox=modal \
-  max_tasks=20
-```
+See the [pilot protocol and command](docs/PILOT.md#reproduce-the-setup) for a comparison of base `Inkling-2-Mini` and a PINGI checkpoint on the same frozen held-out tasks. See [Benchmarks](docs/BENCHMARKS.md) for how this result relates to the reference targets.
 
 ---
 
-## 6. Export & Publish PINGI to Hugging Face
+## 6. Release status
 
-```bash
-uv run pingi-export \
-  tinker_path=tinker://<your-run>/weights/000160 \
-  output_dir=./artifacts/pingi-lora \
-  hf_repo=lyffseba/pingi \
-  push_to_hub=True
-```
-
-Then copy `configs/pi_models.json` into `~/.pi/agent/models.json` and launch `pi --provider pingi-vllm --model pingi`!
+The [Hugging Face page](https://huggingface.co/lyffseba/pingi) hosts the pilot report and per-task scores, not model files. Pilot checkpoints remain private. Before attempting a weight release, run a larger paired eval and bind its results to the exact checkpoint and task manifest in the release gate. Do not use the current pilot report to authorize an upload.
