@@ -36,6 +36,6 @@ That check gained one task and lost none. It is a separate frozen set. Do not av
 
 ## Build record
 
-The pilot trained for 20 batches from base Inkling-2-Mini, with LoRA rank 32 and thinking `none`. It recorded **$18.73** in Tinker training cost, excluding Modal and the standalone evals. Final checkpoints remain private on Tinker and had no scheduled expiration when verified on 2026-11-27. Periodic checkpoints expire on 2026-11-28. No `high` training run and no full `pingi` run have been started.
+The pilot trained for 20 batches from base Inkling-2-Mini, with LoRA rank 32 and thinking `none`. It recorded **$18.73** in Tinker training cost, excluding Modal and the standalone evals. Final checkpoints remain private on Tinker and had no scheduled expiration when verified on 2026-11-27. Periodic checkpoints expire on 2026-11-28. No `high` training run and no full `pingi` run have been started. The saved results cannot authorize a weight upload.
 
 [Findings](https://github.com/lyffseba/pingi/blob/main/docs/FINDINGS.md) · [Next-run checklist](https://github.com/lyffseba/pingi/blob/main/docs/NEXT_RUN.md) · [Source](https://github.com/lyffseba/pingi) · [Smoke record](https://huggingface.co/lyffseba/pingi-smo) · [XAI notes](https://github.com/lyffseba/xai)

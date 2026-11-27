@@ -86,6 +86,8 @@ class ExportConfig:
     push_to_hub: bool = False
     # Public upload requires a paired held-out eval that beats the base model.
     allow_unverified: bool = False
+    # Use when more than one local eval directory names the same checkpoint.
+    eval_dir: str | None = None
 
 
 def main(cfg: ExportConfig) -> None:
@@ -94,7 +96,10 @@ def main(cfg: ExportConfig) -> None:
     if cfg.push_to_hub and not cfg.allow_unverified:
         from pingi.release_gate import check_release
 
-        gate = check_release()
+        gate = check_release(
+            cfg.tinker_path,
+            eval_dir=Path(cfg.eval_dir) if cfg.eval_dir else None,
+        )
         if not gate.ok:
             raise SystemExit(
                 "Refusing Hugging Face upload until the held-out gate passes:\n"

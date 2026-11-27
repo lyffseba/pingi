@@ -295,6 +295,38 @@ def test_heldout_split_and_release_gate() -> None:
     assert not evaluate_pair(base, worse, min_tasks=20).ok
 
 
+def test_release_requires_matching_checkpoint_and_rejects_current_pilot(tmp_path) -> None:
+    import json
+    from pathlib import Path
+
+    from pingi.release_gate import check_eval_dir, check_release, checkpoint_identity
+
+    weights = "tinker://run:train:0/weights/final"
+    sampler = "tinker://run:train:0/sampler_weights/final"
+    assert checkpoint_identity(weights) == checkpoint_identity(sampler) == ("run", "final")
+    rows = [{"task_name": f"t{i}", "passed": i < 12, "error": None} for i in range(20)]
+    base = [{"task_name": f"t{i}", "passed": i < 5, "error": None} for i in range(20)]
+    evidence = {
+        "checkpoint_path": sampler,
+        "compare_with_base": True,
+        "heldout_manifest_sha256": "abc",
+        "tasks": [{"task_name": row["task_name"]} for row in rows],
+    }
+    (tmp_path / "run.json").write_text(json.dumps(evidence), encoding="utf-8")
+    (tmp_path / "base.jsonl").write_text("".join(json.dumps(row) + "\n" for row in base), encoding="utf-8")
+    (tmp_path / "pingi.jsonl").write_text("".join(json.dumps(row) + "\n" for row in rows), encoding="utf-8")
+    assert check_eval_dir(tmp_path, weights).ok
+    assert not check_eval_dir(tmp_path, "tinker://other:train:0/weights/final").ok
+
+    followup = Path("docs/followup-eval/results")
+    gate = check_release(
+        "tinker://00751c13-86fd-503f-99f9-e4db8ba28e63:train:0/weights/final",
+        eval_dir=followup,
+    )
+    assert not gate.ok
+    assert gate.pingi_pass < gate.base_pass
+
+
 def test_mining_provider_resolution() -> None:
     from pingi.mine_sft_modular import MineConfig, resolve_mining_provider
 

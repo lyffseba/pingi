@@ -41,5 +41,248 @@
     "base.jsonl": "f1bd46e8ec105509502e25eb16a4d4411c22e8ce62c5ae960701675ec5f3fb74",
     "pingi.jsonl": "f01fc41352eca6c8c79d30185504de2ee696285ea10ecef259a79deb8d6ed783"
   },
-  "note": "Do not pool these 60 tasks with the earlier 20-task pilot result."
+  "note": "Do not pool these 60 tasks with the earlier 20-task pilot result.",
+  "compare_with_base": true,
+  "tasks": [
+    {
+      "task_name": "oauthlib__oauthlib.1fd52536.combine_file__5jtc65v3",
+      "source": "harness-hub/scale800-harbor"
+    },
+    {
+      "task_name": "task_01709_bc2862",
+      "source": "harness-hub/termgrade-train-harbor"
+    },
+    {
+      "task_name": "getmoto__moto.swegym-0047",
+      "source": "harness-hub/scale800-harbor"
+    },
+    {
+      "task_name": "task_05094_adc119",
+      "source": "harness-hub/termgrade-train-harbor"
+    },
+    {
+      "task_name": "agronholm__exceptiongroup.0b4f4937.combine_module__9lvhskem",
+      "source": "harness-hub/scale800-harbor"
+    },
+    {
+      "task_name": "task_02633_f89726",
+      "source": "harness-hub/termgrade-train-harbor"
+    },
+    {
+      "task_name": "marshmallow-code__marshmallow.9716fc62.combine_module__ryii7a1v",
+      "source": "harness-hub/scale800-harbor"
+    },
+    {
+      "task_name": "task_02824_a1e092",
+      "source": "harness-hub/termgrade-train-harbor"
+    },
+    {
+      "task_name": "lepture__mistune.bf54ef67.combine_file__4tbz1hst",
+      "source": "harness-hub/scale800-harbor"
+    },
+    {
+      "task_name": "task_09953_6bc6e3",
+      "source": "harness-hub/termgrade-train-harbor"
+    },
+    {
+      "task_name": "allegro__bigcache.5aa251c4.func_pm_flip_operators__v4fgmvqd",
+      "source": "harness-hub/scale800-harbor"
+    },
+    {
+      "task_name": "task_02486_1d54a1",
+      "source": "harness-hub/termgrade-train-harbor"
+    },
+    {
+      "task_name": "agronholm__exceptiongroup.0b4f4937.combine_module__ps4pitxu",
+      "source": "harness-hub/scale800-harbor"
+    },
+    {
+      "task_name": "task_14841_0ae84b",
+      "source": "harness-hub/termgrade-train-harbor"
+    },
+    {
+      "task_name": "conan-io__conan.swegym-0617",
+      "source": "harness-hub/scale800-harbor"
+    },
+    {
+      "task_name": "task_02882_42d7b7",
+      "source": "harness-hub/termgrade-train-harbor"
+    },
+    {
+      "task_name": "lepture__mistune.bf54ef67.combine_file__blsmhoh5",
+      "source": "harness-hub/scale800-harbor"
+    },
+    {
+      "task_name": "task_10580_da1922",
+      "source": "harness-hub/termgrade-train-harbor"
+    },
+    {
+      "task_name": "mahmoud__glom.fb3c4e76.combine_file__63c1epiq",
+      "source": "harness-hub/scale800-harbor"
+    },
+    {
+      "task_name": "task_01066_b1cc81",
+      "source": "harness-hub/termgrade-train-harbor"
+    },
+    {
+      "task_name": "caarlos0__env.56a09d29.lm_modify__lb4y3snr",
+      "source": "harness-hub/scale800-harbor"
+    },
+    {
+      "task_name": "task_02472_e3e62c",
+      "source": "harness-hub/termgrade-train-harbor"
+    },
+    {
+      "task_name": "marshmallow-code__apispec.8b421526.combine_file__o6cqdro6",
+      "source": "harness-hub/scale800-harbor"
+    },
+    {
+      "task_name": "task_03670_ea7b67",
+      "source": "harness-hub/termgrade-train-harbor"
+    },
+    {
+      "task_name": "oauthlib__oauthlib.1fd52536.combine_file__8fle46xq",
+      "source": "harness-hub/scale800-harbor"
+    },
+    {
+      "task_name": "task_00109_d82bc5",
+      "source": "harness-hub/termgrade-train-harbor"
+    },
+    {
+      "task_name": "marshmallow-code__marshmallow.9716fc62.combine_file__x2xypft4",
+      "source": "harness-hub/scale800-harbor"
+    },
+    {
+      "task_name": "task_08080_14e9da",
+      "source": "harness-hub/termgrade-train-harbor"
+    },
+    {
+      "task_name": "agronholm__exceptiongroup.0b4f4937.combine_module__0oguvz02",
+      "source": "harness-hub/scale800-harbor"
+    },
+    {
+      "task_name": "task_03450_f9a34a",
+      "source": "harness-hub/termgrade-train-harbor"
+    },
+    {
+      "task_name": "oauthlib__oauthlib.1fd52536.combine_file__1utlssis",
+      "source": "harness-hub/scale800-harbor"
+    },
+    {
+      "task_name": "task_02167_3fc563",
+      "source": "harness-hub/termgrade-train-harbor"
+    },
+    {
+      "task_name": "gosuri__uiprogress.484b9f69.func_pm_remove_loop__2a35mll4",
+      "source": "harness-hub/scale800-harbor"
+    },
+    {
+      "task_name": "task_08069_15d3c1",
+      "source": "harness-hub/termgrade-train-harbor"
+    },
+    {
+      "task_name": "Suor__funcy.207a7810.combine_file__5kzv0kej",
+      "source": "harness-hub/scale800-harbor"
+    },
+    {
+      "task_name": "task_07206_c0192d",
+      "source": "harness-hub/termgrade-train-harbor"
+    },
+    {
+      "task_name": "mahmoud__glom.fb3c4e76.func_basic__2dx4odj4",
+      "source": "harness-hub/scale800-harbor"
+    },
+    {
+      "task_name": "task_01318_d38a81",
+      "source": "harness-hub/termgrade-train-harbor"
+    },
+    {
+      "task_name": "marshmallow-code__apispec.8b421526.combine_file__x34b5zjs",
+      "source": "harness-hub/scale800-harbor"
+    },
+    {
+      "task_name": "task_00156_bd066b",
+      "source": "harness-hub/termgrade-train-harbor"
+    },
+    {
+      "task_name": "python__mypy.swegym-0422",
+      "source": "harness-hub/scale800-harbor"
+    },
+    {
+      "task_name": "task_12749_5eb96d",
+      "source": "harness-hub/termgrade-train-harbor"
+    },
+    {
+      "task_name": "allegro__bigcache.5aa251c4.func_pm_flip_operators__mlplg9xo",
+      "source": "harness-hub/scale800-harbor"
+    },
+    {
+      "task_name": "task_08047_ffdefb",
+      "source": "harness-hub/termgrade-train-harbor"
+    },
+    {
+      "task_name": "life4__textdistance.c3aca916.combine_file__q3rnjr33",
+      "source": "harness-hub/scale800-harbor"
+    },
+    {
+      "task_name": "task_01618_dc6315",
+      "source": "harness-hub/termgrade-train-harbor"
+    },
+    {
+      "task_name": "kayak__pypika.1c9646f0.combine_file__bwokc3rt",
+      "source": "harness-hub/scale800-harbor"
+    },
+    {
+      "task_name": "task_08136_3936dc",
+      "source": "harness-hub/termgrade-train-harbor"
+    },
+    {
+      "task_name": "allegro__bigcache.5aa251c4.func_pm_remove_cond__aqxt9237",
+      "source": "harness-hub/scale800-harbor"
+    },
+    {
+      "task_name": "task_12182_baae2f",
+      "source": "harness-hub/termgrade-train-harbor"
+    },
+    {
+      "task_name": "marshmallow-code__apispec.8b421526.combine_file__wrir0rde",
+      "source": "harness-hub/scale800-harbor"
+    },
+    {
+      "task_name": "task_02640_0d77d9",
+      "source": "harness-hub/termgrade-train-harbor"
+    },
+    {
+      "task_name": "mahmoud__glom.fb3c4e76.func_basic__0xzrqz4z",
+      "source": "harness-hub/scale800-harbor"
+    },
+    {
+      "task_name": "task_02826_e34c03",
+      "source": "harness-hub/termgrade-train-harbor"
+    },
+    {
+      "task_name": "kayak__pypika.1c9646f0.combine_file__tfsul7t7",
+      "source": "harness-hub/scale800-harbor"
+    },
+    {
+      "task_name": "task_13062_ac8fb6",
+      "source": "harness-hub/termgrade-train-harbor"
+    },
+    {
+      "task_name": "hjson__hjson-go.f3219653.lm_modify__olmmz68i",
+      "source": "harness-hub/scale800-harbor"
+    },
+    {
+      "task_name": "task_02787_376c55",
+      "source": "harness-hub/termgrade-train-harbor"
+    },
+    {
+      "task_name": "kayak__pypika.1c9646f0.combine_file__0umuc53t",
+      "source": "harness-hub/scale800-harbor"
+    },
+    {
+      "task_name": "task_03031_852f0c",
+      "source": "harness-hub/termgrade-train-harbor"
+    }
+  ]
 }

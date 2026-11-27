@@ -59,7 +59,7 @@ Evidence: [manifest](followup-eval/heldout_tasks.json) · [base](followup-eval/r
 - One training batch stalled on a Modal exec-status retry. Terminating that one sandbox let the batch finish. The run still completed and saved `final`.
 - The old ~$7 pilot estimate was not a cap. The recorded Tinker bill was **$18.73**, excluding Modal and standalone evals.
 - A `high` pilot is not a cheap flag flip. The `none` run sampled 6,801,485 tokens and trained 15,470,364. Thinking `high` emits more tokens inside the same 4,096-token generation cap. Applying the project's own 3–4× token claim to the $18.73 bill gives a planning range of roughly **$55–75 on Tinker, plus Modal**. That is not a quote and not a stop. Raising `max_tokens` above 4,096 could cost more.
-- The release gate can score the latest paired files, but it does not check that those files belong to the checkpoint being uploaded. Do not use it to authorize a release until that binding exists.
+- A weight upload now requires one paired eval whose recorded checkpoint and task manifest match the checkpoint being uploaded, plus a net gain over base. The 60-task result fails that test. `allow_unverified=True` can bypass the check, so do not use it for a public release.
 
 ## What is saved for later
 

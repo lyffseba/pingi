@@ -64,4 +64,4 @@ PINGI_MODAL_ENVIRONMENT=pingi uv run pingi-eval \
 
 ## After the pilot
 
-The larger check was run. It did not support expansion: **23/60 for the pilot versus 27/60 for base**, +3 / −7, with the loss concentrated in `termgrade`. See [followup-eval/README.md](followup-eval/README.md). The upload check still does not bind a score file to the checkpoint and manifest being released. A future `high` pilot or full run needs a separate approved budget. The `final` checkpoints are the ones to keep; periodic checkpoints expire on 2026-11-28.
+The larger check was run. It did not support expansion: **23/60 for the pilot versus 27/60 for base**, +3 / −7, with the loss concentrated in `termgrade`. See [followup-eval/README.md](followup-eval/README.md). A weight upload must now match that checkpoint and its task manifest, so this result cannot authorize a release. A future `high` pilot or full run needs a separate approved budget. The `final` checkpoints are the ones to keep; periodic checkpoints expire on 2026-11-28.

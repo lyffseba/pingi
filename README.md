@@ -85,7 +85,7 @@ Training mixture (`scale800` + `termgrade`): [populate the local Harbor cache](d
 | **`mvp`** | `uv run pingi-rl preset=mvp` | 1,600 (`4×8×50`, Modal) | **~$15 – $40** | Strong daily-driver PINGI on `scale800 + termgrade` |
 | **`full`** | `uv run pingi-rl preset=full` | 5,120 (`4×8×160`, Modal) | **~$75 – $135** | Full `Qwen3.8-27B-pi-adapted` scale |
 
-Costs above exclude Modal and standalone evaluation; estimates are not spending caps. The MVP and full presets have not been run. The pilot can warm-start a later run from its private `weights/final` checkpoint. The final full run is reserved as session `pingi`.
+Costs above exclude Modal and standalone evaluation; estimates are not spending caps. The MVP and full presets have not been run. Do not warm-start another `none` run from the pilot just because its checkpoint exists. The reserved full session name is `pingi`, and it has not been created.
 
 ### Optional: Train a `High-Thinking` (`high`) Variant Later
 
@@ -116,4 +116,4 @@ See the [pilot protocol and command](docs/PILOT.md#reproduce-the-setup) for a co
 
 ## 6. Release status
 
-The [Hugging Face page](https://huggingface.co/lyffseba/pingi) hosts reports and per-task scores, not model files. The 60-task check does not support a weight release. The upload gate still does not prove that its score file belongs to the checkpoint being uploaded. Do not publish weights from the current results.
+The [Hugging Face page](https://huggingface.co/lyffseba/pingi) hosts reports and per-task scores, not model files. A weight upload now requires paired evidence whose checkpoint and task manifest match the checkpoint being uploaded, and that evidence must show a net gain. The saved 60-task result fails that test. Do not publish weights from the current results.

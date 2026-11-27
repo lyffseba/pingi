@@ -26,7 +26,7 @@ Periodic checkpoints expire on 2026-11-28. Do not plan a resume around `000020`.
 5. Use `behavior_if_log_dir_exists=raise` for a new run. Do not delete the pilot log directory.
 6. Leave W&B off unless its config-upload bug is fixed. The pilot used `wandb_project=None`.
 7. Do not download Harbor datasets inside the training process. The local cache is already populated for both training mixtures and Terminal-Bench 2.0.
-8. Do not upload weights. The release gate is not bound to a checkpoint and manifest.
+8. Do not upload weights unless a new paired eval matches that exact checkpoint and manifest and shows a net gain. The current 60-task evidence fails the gate. If several local eval directories name the same checkpoint, pass `eval_dir` explicitly; the uploader will not guess.
 
 ## If the next experiment is a `high` pilot
 
