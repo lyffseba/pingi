@@ -1,6 +1,6 @@
 # Infrastructure & Expansion Stack
 
-The local smoke test and the 20-batch [pilot](PILOT.md) are complete. The pilot recorded **$18.73 on Tinker**, excluding Modal and standalone eval. No training or eval is planned during the pause; MVP and full runs are unstarted.
+The smoke test, 20-batch [pilot](PILOT.md), and 60-task follow-up are complete. The pilot recorded **$18.73 on Tinker**, excluding Modal and standalone eval. The follow-up did not support more training. No next run is approved. See [NEXT_RUN.md](NEXT_RUN.md).
 
 ## Stack used for the smoke run and pilot
 

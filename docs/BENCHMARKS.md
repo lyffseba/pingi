@@ -1,8 +1,15 @@
 # Benchmarks & Reference Targets
 
-## Completed pilot: held-out Harbor tasks
+## Measured Harbor checks
 
-`pingi-pilot` solved **11/20 (55%)** vs **10/20 (50%)** for base Inkling-2-Mini at `thinking=none`. The paired delta was **one newly solved task, none lost**. These were 20 held-out tasks from the Harbor training sources, not Terminal-Bench or SWE-bench. See the [pilot report](PILOT.md#what-the-pilot-measured) for the protocol and per-task evidence.
+These are separate frozen sets. Do not average them.
+
+| Check | Base Inkling | `pingi-pilot` | Paired change |
+|---|---:|---:|---|
+| 20 held-out tasks, 2026-11-22 | 10/20 | 11/20 | +1 / −0 |
+| 60 fresh tasks, 2026-11-27 | 27/60 | 23/60 | +3 / −7 |
+
+Both used thinking `none`, temperature `0.0`, and a 25-turn cap. Neither is Terminal-Bench or SWE-bench. The 60-task loss was 14/30 versus 14/30 on `scale800` and 9/30 versus 13/30 on `termgrade`. Full evidence is in [FINDINGS.md](FINDINGS.md).
 
 ## Primary reference target: `harness-hub/Qwen3.8-27B-pi-adapted`
 
@@ -24,7 +31,7 @@
 
 - `Qwen3.8-27B` activates **27B dense parameters** per token.
 - `Inkling-2-Mini` activates **3.4B parameters** (5.4B effective across the 3-pass looped core) with a bundled DSpark speculator and 1M context — fitting on a 32–48 GB Mac or single DGX Spark.
-- The larger run is planned under the session name `pingi`. A head-to-head comparison with `Qwen3.8-27B-pi-adapted` still needs the same tasks, harness, thinking setting, and inference budget.
+- The full run remains reserved as session `pingi` and has not started. A head-to-head comparison with `Qwen3.8-27B-pi-adapted` still needs the same tasks, harness, thinking setting, and inference budget. The current Harbor checks do not justify that spend yet.
 
 ## Running Paired Held-Out Evaluation
 

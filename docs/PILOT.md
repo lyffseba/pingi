@@ -1,6 +1,6 @@
 # PINGI pilot: build log and results
 
-**Status: completed and paused.** Training finished on 2026-11-21 at 22:03 CET; paired evaluation finished on 2026-11-22. This is a public pilot report, **not a public adapter release**. The larger run, whose Tinker session is reserved as `pingi`, has not started.
+**Status: completed, then checked on a larger set.** Training finished on 2026-11-21 at 22:03 CET. The 20-task eval finished on 2026-11-22. A 60-task follow-up on 2026-11-27 put the same checkpoint behind base Inkling. This is a public pilot report, **not a public adapter release**. The larger run, whose Tinker session is reserved as `pingi`, has not started. See [FINDINGS.md](FINDINGS.md) and [NEXT_RUN.md](NEXT_RUN.md).
 
 ## What the pilot measured
 
@@ -62,6 +62,6 @@ PINGI_MODAL_ENVIRONMENT=pingi uv run pingi-eval \
   sandbox=modal max_tasks=20 thinking_mode=none temperature=0.0 max_turns=25
 ```
 
-## Before expanding or releasing weights
+## After the pilot
 
-Freeze a larger fresh set that excludes training and dev tasks. Compare the same checkpoint with base Inkling again, then do a matched Qwen run if the gain holds. The current upload check scores the latest paired results but does not bind them to the requested checkpoint or task manifest; fix that before using it to authorize a release. Set a separate budget for the next eval before starting it.
+The larger check was run. It did not support expansion: **23/60 for the pilot versus 27/60 for base**, +3 / −7, with the loss concentrated in `termgrade`. See [followup-eval/README.md](followup-eval/README.md). The upload check still does not bind a score file to the checkpoint and manifest being released. A future `high` pilot or full run needs a separate approved budget. The `final` checkpoints are the ones to keep; periodic checkpoints expire on 2026-11-28.

@@ -1,18 +1,29 @@
-# PINGI follow-up evaluation plan
+# PINGI 60-task follow-up
 
-**Prepared, not run.** Compare the saved private `pingi-pilot` final checkpoint with base Inkling-2-Mini on 60 fresh tasks, 30 per Harbor source. This is a same-mixture generalization check, not a test on entirely unseen projects, a comparison with Qwen, or authorization to release weights.
+**Completed on 2026-11-27. The pilot gain did not hold.** This is a same-mixture generalization check of the saved private `pingi-pilot` final sampler against base Inkling-2-Mini. It is not a Qwen comparison and not authorization to release weights or start another run.
 
-## Selection
+## Result
 
-The pilot ran 20 synchronous batches of 8 groups. Its saved ordered dataset config and completed batch records identify the first 160 training tasks as scheduled. The [frozen manifest](heldout_tasks.json) uses the unscheduled portion of that candidate pool. It excludes the 160 scheduled tasks, the 16 in-loop dev tasks, all 20 original pilot evaluation tasks, and normalized exact instruction duplicates. Selection was deterministic by SHA-256 rank with seed `pingi-followup-60-v1`, limited to prebuilt task images, with at most three selected `scale800-harbor` tasks per project. The evaluator checks each instruction hash against the local task cache before creating a Tinker client. Near-duplicate tasks, overlap in base-model pretraining, and changes to remote image tags are not ruled out.
+| Model | Pass@1 | Median turns | Median tool calls |
+|---|---:|---:|---:|
+| Base Inkling-2-Mini | 27/60 (45.0%) | 15.0 | 11.5 |
+| `pingi-pilot` | 23/60 (38.3%) | 16.0 | 13.0 |
+
+**+3 newly solved, −7 lost.** No task errors. `scale800-harbor` was tied at 14/30. `termgrade-train-harbor` was 9/30 for the pilot against 13/30 for the base model. The recorded telemetry had zero `edit` calls on both sides, so edit-error rate is not informative. Do not pool this set with the earlier 20-task result.
+
+[Manifest](heldout_tasks.json) · [base scores](results/base.jsonl) · [pilot scores](results/pingi.jsonl) · [settings and hashes](results/run.json).
 
 Manifest SHA-256: `c0db6562d074188784f81bc1ab476886081dfa43818cd73ac450e9f67ab83142`.
 
-## Protocol
+## How the 60 tasks were chosen
 
-Use the same frozen manifest for both models, thinking `none`, temperature `0.0`, 25 turns, 4,096 generated tokens per step and 49,152 trajectory tokens, with the same `pi` tools. Report paired wins and losses, per-source pass counts, and median turns. Preserve task errors separately instead of counting them as model failures. Save individual task results as they finish, plus the manifest hash and checkpoint path. Do not combine this result with the 20-task pilot after looking at outcomes.
+The pilot ran 20 synchronous batches of 8 groups. Its saved ordered dataset config and completed batch records identify the first 160 training tasks as scheduled. This manifest uses the unscheduled portion of that candidate pool. It excludes those 160 tasks, the 16 in-loop dev tasks, all 20 original pilot evaluation tasks, and normalized exact instruction duplicates. Selection was deterministic by SHA-256 rank with seed `pingi-followup-60-v1`, limited to prebuilt task images, with at most three selected `scale800-harbor` tasks per project. The evaluator checked each instruction hash against the local task cache before creating a Tinker client. Near-duplicate tasks, overlap in base-model pretraining, and changes to remote image tags are not ruled out.
 
-The prior 40-rollout comparison had about **$0.44 in estimated Tinker usage** from its billing rows. Scaling linearly to 120 rollouts gives **about $1.32 on Tinker**, before Modal and any storage charges. This is a planning estimate, not a hard cap. Confirm the available balance and spend limit before running. No retraining is needed.
+## Protocol that ran
+
+Both models used the frozen manifest, thinking `none`, temperature `0.0`, 25 turns, 4,096 generated tokens per step, 49,152 trajectory tokens, and the same `pi` tools. Task errors would have been kept out of the final score files. This run had none. The planning estimate was about **$1.32 on Tinker, plus Modal**, based on the earlier 40-rollout eval. That was not a hard cap. The exact invoice for this eval was not separated here.
+
+An earlier launch of the same command was stopped after about 3 minutes and saved no task results. The completed artifact is `20261127-192206-004981Z`.
 
 ```sh
 PINGI_MODAL_ENVIRONMENT=pingi uv run pingi-eval \

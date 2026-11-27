@@ -1,0 +1,45 @@
+{
+  "kind": "paired_heldout_followup",
+  "completed": "2026-11-27",
+  "local_eval_id": "20261127-192206-004981Z",
+  "base_model": "thinkingmachines/Inkling-2-Mini",
+  "checkpoint_path": "tinker://00751c13-86fd-503f-99f9-e4db8ba28e63:train:0/sampler_weights/final",
+  "checkpoint_access": "private",
+  "eval_settings": {
+    "thinking_mode": "none",
+    "temperature": 0.0,
+    "max_tasks": 60,
+    "max_turns": 25,
+    "max_tokens": 4096,
+    "max_trajectory_tokens": 49152,
+    "sandbox": "modal",
+    "concurrency": 4
+  },
+  "paired_counts": {
+    "base_passed": 27,
+    "pilot_passed": 23,
+    "both_passed": 20,
+    "pilot_only": 3,
+    "base_only": 7,
+    "neither_passed": 30,
+    "task_errors": 0
+  },
+  "by_source": {
+    "harness-hub/scale800-harbor": {
+      "n": 30,
+      "base_passed": 14,
+      "pilot_passed": 14
+    },
+    "harness-hub/termgrade-train-harbor": {
+      "n": 30,
+      "base_passed": 13,
+      "pilot_passed": 9
+    }
+  },
+  "heldout_manifest_sha256": "c0db6562d074188784f81bc1ab476886081dfa43818cd73ac450e9f67ab83142",
+  "sha256": {
+    "base.jsonl": "f1bd46e8ec105509502e25eb16a4d4411c22e8ce62c5ae960701675ec5f3fb74",
+    "pingi.jsonl": "f01fc41352eca6c8c79d30185504de2ee696285ea10ecef259a79deb8d6ed783"
+  },
+  "note": "Do not pool these 60 tasks with the earlier 20-task pilot result."
+}

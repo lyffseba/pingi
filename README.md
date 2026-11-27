@@ -10,11 +10,11 @@ specifically for the [`pi`](https://pi.dev/) coding agent harness using **Tinker
 | Hugging Face (main hub) | https://huggingface.co/lyffseba/pingi |
 | Hugging Face (smoke checkpoint) | https://huggingface.co/lyffseba/pingi-smo |
 | Companion research (`xai`) | https://github.com/lyffseba/xai · https://huggingface.co/spaces/lyffseba/xai |
-| Docs | [docs/SMOKE.md](docs/SMOKE.md) · [docs/PILOT.md](docs/PILOT.md) · [docs/BENCHMARKS.md](docs/BENCHMARKS.md) · [docs/INFRA.md](docs/INFRA.md) |
+| Docs | [docs/FINDINGS.md](docs/FINDINGS.md) · [docs/NEXT_RUN.md](docs/NEXT_RUN.md) · [docs/PILOT.md](docs/PILOT.md) · [docs/BENCHMARKS.md](docs/BENCHMARKS.md) |
 
-## Pilot complete — project paused
+## Pilot complete — not ready to scale
 
-On 20 matched held-out Harbor tasks, `pingi-pilot` solved **11/20 (55%)** versus **10/20 (50%)** for base Inkling-2-Mini: one additional solve, none lost. That is a preliminary result, not a broader benchmark claim. The pilot ran 20 training batches and recorded **$18.73** in Tinker training-run cost, excluding Modal and the separate paired evaluation. Final checkpoints are saved privately on Tinker; **only the pilot report and scores are public**. See the [build log, protocol, and evidence](docs/PILOT.md).
+The saved `none` pilot is behind base Inkling on the later 60-task check: **23/60 versus 27/60**, with 3 new solves and 7 losses. An earlier 20-task check had shown 11/20 versus 10/20. Do not combine those sets. Training cost **$18.73** on Tinker, excluding Modal and the separate evals. Checkpoints remain private. No next run is approved. See [findings](docs/FINDINGS.md) and the [next-run checklist](docs/NEXT_RUN.md).
 
 ## Design Decisions
 
@@ -116,4 +116,4 @@ See the [pilot protocol and command](docs/PILOT.md#reproduce-the-setup) for a co
 
 ## 6. Release status
 
-The [Hugging Face page](https://huggingface.co/lyffseba/pingi) hosts the pilot report and per-task scores, not model files. Pilot checkpoints remain private. Before attempting a weight release, run a larger paired eval and bind its results to the exact checkpoint and task manifest in the release gate. Do not use the current pilot report to authorize an upload.
+The [Hugging Face page](https://huggingface.co/lyffseba/pingi) hosts reports and per-task scores, not model files. The 60-task check does not support a weight release. The upload gate still does not prove that its score file belongs to the checkpoint being uploaded. Do not publish weights from the current results.

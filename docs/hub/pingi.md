@@ -8,25 +8,34 @@ tags:
 - coding
 ---
 
-# PINGI — pilot report
+# PINGI — findings report
 
-**Pilot complete; project paused. This repository contains documentation and evaluation records, not adapter weights.** PINGI adapts [`thinkingmachines/Inkling-2-Mini`](https://huggingface.co/thinkingmachines/Inkling-2-Mini) for the [`pi`](https://pi.dev/) coding harness (`read`, `bash`, `edit`, `write`) using agentic RL on Tinker and Harbor.
+**Pilot complete; not released; no next run started.** This repository contains documentation and evaluation records, not adapter weights. PINGI adapts [`thinkingmachines/Inkling-2-Mini`](https://huggingface.co/thinkingmachines/Inkling-2-Mini) for the [`pi`](https://pi.dev/) coding harness (`read`, `bash`, `edit`, `write`) using agentic RL on Tinker and Harbor.
 
-## Pilot result (2026-11-22)
+## Latest measured result (2026-11-27)
 
-| Model | Held-out Pass@1 | Median turns | Median tool calls | Edit error rate |
-|---|---:|---:|---:|---:|
-| Base Inkling-2-Mini | 10/20 (50%) | 15.5 | 13 | 0% |
-| `pingi-pilot` final checkpoint | 11/20 (55%) | 14.0 | 13 | 0% |
+| Model | Held-out Pass@1 | Median turns | Median tool calls |
+|---|---:|---:|---:|
+| Base Inkling-2-Mini | 27/60 (45.0%) | 15.0 | 11.5 |
+| `pingi-pilot` final checkpoint | 23/60 (38.3%) | 16.0 | 13.0 |
 
-**One newly solved task, none lost.** Both models ran on the same 20 frozen Harbor tasks excluded from training and dev: 10 from `scale800-harbor` and 10 from `termgrade-train-harbor`. Both used thinking `none`, temperature `0.0`, and a 25-turn cap. No task-level eval errors were recorded. One additional solve is a preliminary signal, not a general performance claim or a direct comparison with `harness-hub/Qwen3.8-27B-pi-adapted`, Terminal-Bench, or SWE-bench.
+**3 newly solved, 7 lost.** The same private final sampler was behind base Inkling on 60 fresh tasks from the training mixture. `scale800` was tied at 14/30. `termgrade` was 9/30 against 13/30. Thinking was `none`, temperature `0.0`, and the turn cap was 25. No task errors were recorded. This is not a Terminal-Bench, SWE-bench, or Qwen result.
 
-[Held-out manifest](pilot-results/heldout_tasks.json) · [Base per-task scores](pilot-results/base.jsonl) · [Pilot per-task scores](pilot-results/pingi.jsonl) · [Eval settings and file hashes](pilot-results/run.json)
+[60-task manifest](followup-eval/heldout_tasks.json) · [Base scores](followup-eval/results/base.jsonl) · [Pilot scores](followup-eval/results/pingi.jsonl) · [Hashes](followup-eval/results/run.json)
+
+## Earlier 20-task check (2026-11-22)
+
+| Model | Held-out Pass@1 | Median turns | Median tool calls |
+|---|---:|---:|---:|
+| Base Inkling-2-Mini | 10/20 (50%) | 15.5 | 13 |
+| `pingi-pilot` final checkpoint | 11/20 (55%) | 14.0 | 13 |
+
+That check gained one task and lost none. It is a separate frozen set. Do not average it with the 60-task result.
+
+[20-task manifest](pilot-results/heldout_tasks.json) · [Base scores](pilot-results/base.jsonl) · [Pilot scores](pilot-results/pingi.jsonl)
 
 ## Build record
 
-The [pilot build log](https://github.com/lyffseba/pingi/blob/main/docs/PILOT.md) covers the Docker smoke test, the switch to the dedicated Modal `pingi` environment, the run settings, and what broke along the way. The pilot started from base Inkling-2-Mini, trained for 20 batches (640 nominal rollouts) with LoRA rank 32 and thinking `none`, and recorded **$18.73** in Tinker training-run cost, excluding Modal and the standalone paired eval.
+The pilot trained for 20 batches from base Inkling-2-Mini, with LoRA rank 32 and thinking `none`. It recorded **$18.73** in Tinker training cost, excluding Modal and the standalone evals. Final checkpoints remain private on Tinker and had no scheduled expiration when verified on 2026-11-27. Periodic checkpoints expire on 2026-11-28. No `high` training run and no full `pingi` run have been started.
 
-Tinker project `pingi`, session `pingi-pilot`: the final training and sampler checkpoints are saved privately. The larger run (`pingi`) has not started. No pilot weights have been exported or made public.
-
-[Source code](https://github.com/lyffseba/pingi) · [Smoke record](https://huggingface.co/lyffseba/pingi-smo) · [XAI research notes](https://github.com/lyffseba/xai)
+[Findings](https://github.com/lyffseba/pingi/blob/main/docs/FINDINGS.md) · [Next-run checklist](https://github.com/lyffseba/pingi/blob/main/docs/NEXT_RUN.md) · [Source](https://github.com/lyffseba/pingi) · [Smoke record](https://huggingface.co/lyffseba/pingi-smo) · [XAI notes](https://github.com/lyffseba/xai)
