@@ -1,0 +1,302 @@
+[
+  {
+    "task_name": "oauthlib__oauthlib.1fd52536.combine_file__5jtc65v3",
+    "source": "harness-hub/scale800-harbor",
+    "instruction_sha256": "009dabf3663def2078619123c3dd03f393e22e6cd0fec1aa057b993fda6a24d3"
+  },
+  {
+    "task_name": "task_01709_bc2862",
+    "source": "harness-hub/termgrade-train-harbor",
+    "instruction_sha256": "ca0124773a2432ab0af0aab47f069da567b62207873638ed6c3c6719c9058d01"
+  },
+  {
+    "task_name": "getmoto__moto.swegym-0047",
+    "source": "harness-hub/scale800-harbor",
+    "instruction_sha256": "d6061dabf9bbba9899e5285e4ce706b697166258ab9c4dda4ad96072b582b690"
+  },
+  {
+    "task_name": "task_05094_adc119",
+    "source": "harness-hub/termgrade-train-harbor",
+    "instruction_sha256": "9357aa1864f2872f8a09a9ff1b97bd5c39cfd2e51ca7a8ffc3fc25c90fd0b215"
+  },
+  {
+    "task_name": "agronholm__exceptiongroup.0b4f4937.combine_module__9lvhskem",
+    "source": "harness-hub/scale800-harbor",
+    "instruction_sha256": "9efd53864e315cdc500c1c1475675b8929503dfe91f80bf3a6fac411484f46b1"
+  },
+  {
+    "task_name": "task_02633_f89726",
+    "source": "harness-hub/termgrade-train-harbor",
+    "instruction_sha256": "a9c0dadbf67d3c87200760b448ceffb97859431837a04f81287e8ca420f10fbc"
+  },
+  {
+    "task_name": "marshmallow-code__marshmallow.9716fc62.combine_module__ryii7a1v",
+    "source": "harness-hub/scale800-harbor",
+    "instruction_sha256": "342bccb7479c2cdedde90aff9d07e4f552df10011ef02d911bdf5668d5f737c0"
+  },
+  {
+    "task_name": "task_02824_a1e092",
+    "source": "harness-hub/termgrade-train-harbor",
+    "instruction_sha256": "cb4702f089096216ab34fa6394524633890ffab044ffcebdd7ffa1b48c48eaa5"
+  },
+  {
+    "task_name": "lepture__mistune.bf54ef67.combine_file__4tbz1hst",
+    "source": "harness-hub/scale800-harbor",
+    "instruction_sha256": "7af784fb8c81453b0f3c58c845b1eaf74b7b985770b9042e280041e326c6c134"
+  },
+  {
+    "task_name": "task_09953_6bc6e3",
+    "source": "harness-hub/termgrade-train-harbor",
+    "instruction_sha256": "3666b53e1c49044ce8e68788c6ff67638527a1d2bba54b5f12d7000643fd0528"
+  },
+  {
+    "task_name": "allegro__bigcache.5aa251c4.func_pm_flip_operators__v4fgmvqd",
+    "source": "harness-hub/scale800-harbor",
+    "instruction_sha256": "5b198132aa2bb3b3faa8a486b06ebef33c10f8b040f3daffefccb0644ec75cff"
+  },
+  {
+    "task_name": "task_02486_1d54a1",
+    "source": "harness-hub/termgrade-train-harbor",
+    "instruction_sha256": "b0264857b6bb72bb367dd76617a675dd55c13dbd0a7220462312b726777712ac"
+  },
+  {
+    "task_name": "agronholm__exceptiongroup.0b4f4937.combine_module__ps4pitxu",
+    "source": "harness-hub/scale800-harbor",
+    "instruction_sha256": "382c418d5e5b2dca63aacb12905c9ea48f699bd61a55fe4e34b4d84decadf077"
+  },
+  {
+    "task_name": "task_14841_0ae84b",
+    "source": "harness-hub/termgrade-train-harbor",
+    "instruction_sha256": "aa2a1eb0179da8721c7dd230874146bdaa5de6a3448c44075709878ce851388c"
+  },
+  {
+    "task_name": "conan-io__conan.swegym-0617",
+    "source": "harness-hub/scale800-harbor",
+    "instruction_sha256": "6c13db023c62b6d391b74b70a7d4fb16cf50e54dc86a0fb7016760990a9a19b2"
+  },
+  {
+    "task_name": "task_02882_42d7b7",
+    "source": "harness-hub/termgrade-train-harbor",
+    "instruction_sha256": "607e189ce547efe1d40656d40986603c62438c10f5c046d7f1e60f8918677270"
+  },
+  {
+    "task_name": "lepture__mistune.bf54ef67.combine_file__blsmhoh5",
+    "source": "harness-hub/scale800-harbor",
+    "instruction_sha256": "6bf5fd470a03175aa806063ef346212256d5f7be594aa1ce968abda419774083"
+  },
+  {
+    "task_name": "task_10580_da1922",
+    "source": "harness-hub/termgrade-train-harbor",
+    "instruction_sha256": "bed3b548a9cf45eed5c8f06c1f546a86ff01032bffae9500c67dee6c49137da3"
+  },
+  {
+    "task_name": "mahmoud__glom.fb3c4e76.combine_file__63c1epiq",
+    "source": "harness-hub/scale800-harbor",
+    "instruction_sha256": "95f5a145d6277150614219afd8219d02acf4aa4c352eb63e076cdd245ed2f142"
+  },
+  {
+    "task_name": "task_01066_b1cc81",
+    "source": "harness-hub/termgrade-train-harbor",
+    "instruction_sha256": "f210a6066398f3792d6121198631953c496411cf5e5d7d71f95f9da7db868c15"
+  },
+  {
+    "task_name": "caarlos0__env.56a09d29.lm_modify__lb4y3snr",
+    "source": "harness-hub/scale800-harbor",
+    "instruction_sha256": "2e79056942c499aede93b0071d69a2cf57741633994093ea3e35cc2a47a15378"
+  },
+  {
+    "task_name": "task_02472_e3e62c",
+    "source": "harness-hub/termgrade-train-harbor",
+    "instruction_sha256": "8a8ac1c3a0f7c5770b7cd8b620ce83cf00951b1ab4519236d5b02d510ad2a089"
+  },
+  {
+    "task_name": "marshmallow-code__apispec.8b421526.combine_file__o6cqdro6",
+    "source": "harness-hub/scale800-harbor",
+    "instruction_sha256": "64d5d0b2100d3aa73ad17bfdef4a644844aa2d955a119d7ea6eaf22fb920f83a"
+  },
+  {
+    "task_name": "task_03670_ea7b67",
+    "source": "harness-hub/termgrade-train-harbor",
+    "instruction_sha256": "6e63055b8153ec81cfea2160ad515cc7ffab8fab1bfc082a495b392fdd2c39ee"
+  },
+  {
+    "task_name": "oauthlib__oauthlib.1fd52536.combine_file__8fle46xq",
+    "source": "harness-hub/scale800-harbor",
+    "instruction_sha256": "23067f6a9f9e75f60a273c66b4c91911b425c0978bdc41815fe6028d6905253f"
+  },
+  {
+    "task_name": "task_00109_d82bc5",
+    "source": "harness-hub/termgrade-train-harbor",
+    "instruction_sha256": "f0a494a8c7684ec581b476a3ee187845a3ce5b712407bc41aa0bc4c7c4a2dace"
+  },
+  {
+    "task_name": "marshmallow-code__marshmallow.9716fc62.combine_file__x2xypft4",
+    "source": "harness-hub/scale800-harbor",
+    "instruction_sha256": "23d975b32475a8674ea4a01f0eccd6e9167ad90e1d8ce9b6b50f68e7aa285319"
+  },
+  {
+    "task_name": "task_08080_14e9da",
+    "source": "harness-hub/termgrade-train-harbor",
+    "instruction_sha256": "e312ed16c56521acfb5b20a923fd8e575dd64c8826ea5d78bb6714cb803c0717"
+  },
+  {
+    "task_name": "agronholm__exceptiongroup.0b4f4937.combine_module__0oguvz02",
+    "source": "harness-hub/scale800-harbor",
+    "instruction_sha256": "cceca2a3c5037aac529947c14bd2344d586a9455fb0fc0225296896c8b49dbfa"
+  },
+  {
+    "task_name": "task_03450_f9a34a",
+    "source": "harness-hub/termgrade-train-harbor",
+    "instruction_sha256": "4fba40c13d99c1f1a06555feee0d87af100a66058450820b97bbbdba641002b6"
+  },
+  {
+    "task_name": "oauthlib__oauthlib.1fd52536.combine_file__1utlssis",
+    "source": "harness-hub/scale800-harbor",
+    "instruction_sha256": "aaf36641c5794bae6278a9925372936d309eed8ea244115d29dd88d9311a5216"
+  },
+  {
+    "task_name": "task_02167_3fc563",
+    "source": "harness-hub/termgrade-train-harbor",
+    "instruction_sha256": "4e936ac808ad9c017fd4b4d40155f2c733ba460ea0f1a9607d368326c2231956"
+  },
+  {
+    "task_name": "gosuri__uiprogress.484b9f69.func_pm_remove_loop__2a35mll4",
+    "source": "harness-hub/scale800-harbor",
+    "instruction_sha256": "7dde9148c025ad77d481649d9f6abbb4b2b36ad30c368ebf3ff5622dfa35fed2"
+  },
+  {
+    "task_name": "task_08069_15d3c1",
+    "source": "harness-hub/termgrade-train-harbor",
+    "instruction_sha256": "46dd89051bb83b34f672936f216eab687f0f9e0adacc13e99ff353069d7a4e22"
+  },
+  {
+    "task_name": "Suor__funcy.207a7810.combine_file__5kzv0kej",
+    "source": "harness-hub/scale800-harbor",
+    "instruction_sha256": "cc94098c3b3973cc1f046757796a9ac8f962c082f7d5b512492bc8c1181ea4ae"
+  },
+  {
+    "task_name": "task_07206_c0192d",
+    "source": "harness-hub/termgrade-train-harbor",
+    "instruction_sha256": "12b4cd2230df83ad81a008f11108a32489949e908472705a888894c1cb3365be"
+  },
+  {
+    "task_name": "mahmoud__glom.fb3c4e76.func_basic__2dx4odj4",
+    "source": "harness-hub/scale800-harbor",
+    "instruction_sha256": "edd9ce5aa25fbfa0373c257967d290bce7ffc6369ee4cdc016cb17f4d1ef49fc"
+  },
+  {
+    "task_name": "task_01318_d38a81",
+    "source": "harness-hub/termgrade-train-harbor",
+    "instruction_sha256": "38d1666c88f2698080551f0d123fdd96307d3d94590e4f8ad22743a37167e335"
+  },
+  {
+    "task_name": "marshmallow-code__apispec.8b421526.combine_file__x34b5zjs",
+    "source": "harness-hub/scale800-harbor",
+    "instruction_sha256": "77405010feb07f7b4d83dcd58191f5e3e5c0fda4937cd6e3dc10491567f2c0ce"
+  },
+  {
+    "task_name": "task_00156_bd066b",
+    "source": "harness-hub/termgrade-train-harbor",
+    "instruction_sha256": "a7c8101588238a07937eab95addd4b186a4d2bf1a9fd790487933358aedb4ec8"
+  },
+  {
+    "task_name": "python__mypy.swegym-0422",
+    "source": "harness-hub/scale800-harbor",
+    "instruction_sha256": "43012fe5e91c22cf8c4ceae5e5965d9f1fd9782669d72960a3c01e04d4e81dcf"
+  },
+  {
+    "task_name": "task_12749_5eb96d",
+    "source": "harness-hub/termgrade-train-harbor",
+    "instruction_sha256": "61e7ca6ae041f2cdc8bc46d43ed29eeea505df9523a6294b7c75ccf2fa442a12"
+  },
+  {
+    "task_name": "allegro__bigcache.5aa251c4.func_pm_flip_operators__mlplg9xo",
+    "source": "harness-hub/scale800-harbor",
+    "instruction_sha256": "0cefafc0451cb5ff47eb169b48c717558cafde279edc0ce51e0686356ad9bbcd"
+  },
+  {
+    "task_name": "task_08047_ffdefb",
+    "source": "harness-hub/termgrade-train-harbor",
+    "instruction_sha256": "19d989c58a2e6d8b4d079149b050ed2aef6f777a68c31f0c2e6d59bf921cbf52"
+  },
+  {
+    "task_name": "life4__textdistance.c3aca916.combine_file__q3rnjr33",
+    "source": "harness-hub/scale800-harbor",
+    "instruction_sha256": "cb31f57e7e1bfe07348d17c673f5c809225d5f9cc5ef6295a00bcee0c3f46d37"
+  },
+  {
+    "task_name": "task_01618_dc6315",
+    "source": "harness-hub/termgrade-train-harbor",
+    "instruction_sha256": "16b6e74b3e648d030b23ba7e4f3b963d74678ad1bbc18c56ca2f1881ee6a8b7c"
+  },
+  {
+    "task_name": "kayak__pypika.1c9646f0.combine_file__bwokc3rt",
+    "source": "harness-hub/scale800-harbor",
+    "instruction_sha256": "1b81d54137c779a2f36fb6543ca46e9aba8d705ace6813feb5884a92dd1f4811"
+  },
+  {
+    "task_name": "task_08136_3936dc",
+    "source": "harness-hub/termgrade-train-harbor",
+    "instruction_sha256": "45718f9847c42ce63c81f5b27d678eff6a875320cf7503e9cac6df30d7fea790"
+  },
+  {
+    "task_name": "allegro__bigcache.5aa251c4.func_pm_remove_cond__aqxt9237",
+    "source": "harness-hub/scale800-harbor",
+    "instruction_sha256": "8d8123bb913da1b7ffc01dee7bca3279321dc5da504705f43b7d03f285bbe161"
+  },
+  {
+    "task_name": "task_12182_baae2f",
+    "source": "harness-hub/termgrade-train-harbor",
+    "instruction_sha256": "10772d19efd48b36bf1b884adfa9b3d826efaeb23904a624fc44f34e4fc25d09"
+  },
+  {
+    "task_name": "marshmallow-code__apispec.8b421526.combine_file__wrir0rde",
+    "source": "harness-hub/scale800-harbor",
+    "instruction_sha256": "619c77a7716d5e6b457b740fc858cea6ee241d0380e9c79ec49bbaac7c0e24b9"
+  },
+  {
+    "task_name": "task_02640_0d77d9",
+    "source": "harness-hub/termgrade-train-harbor",
+    "instruction_sha256": "5ce6a7ad9d2125fd5c40a51977cf3f5d58798dfa41abe50b0b9d7661c39c8ca2"
+  },
+  {
+    "task_name": "mahmoud__glom.fb3c4e76.func_basic__0xzrqz4z",
+    "source": "harness-hub/scale800-harbor",
+    "instruction_sha256": "088db359edd87733a4f60f60233bda9918087c42581db077fdeca659934e3206"
+  },
+  {
+    "task_name": "task_02826_e34c03",
+    "source": "harness-hub/termgrade-train-harbor",
+    "instruction_sha256": "d1bc9bdfb57c714642c9ecc1ae2df9033dd75f9cafaf5022875c8d8198be8757"
+  },
+  {
+    "task_name": "kayak__pypika.1c9646f0.combine_file__tfsul7t7",
+    "source": "harness-hub/scale800-harbor",
+    "instruction_sha256": "f6cd11d0804451576582560eb5d6bc08b27698042d6d31629b66d60a80fe9abd"
+  },
+  {
+    "task_name": "task_13062_ac8fb6",
+    "source": "harness-hub/termgrade-train-harbor",
+    "instruction_sha256": "85fbf4ab77111cd1ddfd29299e13a3d0b09fc41e667421bad3d6d832b96eb967"
+  },
+  {
+    "task_name": "hjson__hjson-go.f3219653.lm_modify__olmmz68i",
+    "source": "harness-hub/scale800-harbor",
+    "instruction_sha256": "1d1d23345cd056df1db8213861d0129177f5be1d6f26f9d1fb645c6344252f57"
+  },
+  {
+    "task_name": "task_02787_376c55",
+    "source": "harness-hub/termgrade-train-harbor",
+    "instruction_sha256": "25bef2756dbaebc2f36609c40c6273dbb1fb27bbf3f1f4a31a6455890998fe92"
+  },
+  {
+    "task_name": "kayak__pypika.1c9646f0.combine_file__0umuc53t",
+    "source": "harness-hub/scale800-harbor",
+    "instruction_sha256": "73e356b9b83fb5745c2a1604d35b47ce2638bb023ec3bc77df4f3178587d6fec"
+  },
+  {
+    "task_name": "task_03031_852f0c",
+    "source": "harness-hub/termgrade-train-harbor",
+    "instruction_sha256": "1f4cda06783392e8bd023ef085f647cc559552a3fe9867ba7d575921e908b8e7"
+  }
+]

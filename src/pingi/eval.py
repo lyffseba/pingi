@@ -8,12 +8,13 @@ results and printing a paired pass@1 + efficiency comparison table.
 from __future__ import annotations
 
 import asyncio
+import hashlib
 import json
 import logging
 import statistics
 import time
 from dataclasses import asdict, dataclass
-from datetime import datetime
+from datetime import UTC, datetime
 from pathlib import Path
 from typing import Literal
 
@@ -205,6 +206,7 @@ async def _run_suite(
     renderer: PingiEffortRenderer,
     sandbox_factory: TaskSandboxFactory,
     cfg: PingiEvalConfig,
+    progress_path: Path,
 ) -> list[EvalTaskResult]:
     policy = TinkerTokenCompleter(
         sampling_client=sampling_client,
@@ -213,28 +215,63 @@ async def _run_suite(
     )
     sem = asyncio.Semaphore(cfg.concurrency)
     logger.info("Running eval [%s] on %d tasks (thinking=%s)", label, len(tasks), cfg.thinking_mode)
-    return list(
-        await asyncio.gather(
-            *(_eval_one_task(t, policy, renderer, sandbox_factory, cfg, sem) for t in tasks)
-        )
-    )
+    completed = 0
+
+    async def record(task: PingiTask) -> EvalTaskResult:
+        nonlocal completed
+        result = await _eval_one_task(task, policy, renderer, sandbox_factory, cfg, sem)
+        with progress_path.open("a", encoding="utf-8") as f:
+            f.write(json.dumps(asdict(result)) + "\n")
+        completed += 1
+        logger.info("Eval [%s] %d/%d: %s", label, completed, len(tasks), task.task_name)
+        return result
+
+    return list(await asyncio.gather(*(record(task) for task in tasks)))
 
 
-def _filter_heldout(tasks: list[PingiTask], heldout_file: str | None, max_tasks: int) -> list[PingiTask]:
-    if not heldout_file:
+def _filter_heldout(
+    tasks: list[PingiTask], manifest: bytes | None, max_tasks: int
+) -> list[PingiTask]:
+    if max_tasks < 1:
+        raise ValueError("max_tasks must be positive")
+    if manifest is None:
         return tasks[:max_tasks]
-    rows = json.loads(Path(heldout_file).read_text(encoding="utf-8"))
-    wanted = {row["task_name"] for row in rows}
-    selected = [t for t in tasks if t.task_name in wanted]
-    missing = wanted - {t.task_name for t in selected}
-    if missing:
-        logger.warning("Held-out manifest has %d tasks not in the loaded datasets", len(missing))
+
+    rows = json.loads(manifest)
+    if not isinstance(rows, list) or not rows:
+        raise ValueError("Held-out manifest must contain a nonempty list of tasks")
+    by_name: dict[str, list[PingiTask]] = {}
+    for task in tasks:
+        by_name.setdefault(task.task_name, []).append(task)
+    selected = []
+    seen = set()
+    for row in rows:
+        name = row["task_name"]
+        if name in seen:
+            raise ValueError(f"Duplicate held-out task: {name}")
+        seen.add(name)
+        source = row.get("source")
+        candidates = [t for t in by_name.get(name, []) if source is None or t.source == source]
+        if len(candidates) != 1:
+            raise ValueError(f"Held-out task {name!r} did not match exactly one cached task")
+        task = candidates[0]
+        fingerprint = row.get("instruction_sha256")
+        if fingerprint is not None and fingerprint != hashlib.sha256(task.instruction.encode()).hexdigest():
+            raise ValueError(f"Held-out task {name!r} instruction changed since the manifest was frozen")
+        selected.append(task)
     return selected[:max_tasks]
 
 
 async def run(cfg: PingiEvalConfig) -> None:
+    if cfg.concurrency < 1:
+        raise ValueError("concurrency must be positive")
+    if cfg.compare_with_base and not cfg.checkpoint_path:
+        raise ValueError("compare_with_base requires checkpoint_path")
     groups = load_datasets_spec(cfg.datasets)
-    tasks = _filter_heldout([t for g in groups for t in g], cfg.heldout_file, cfg.max_tasks)
+    manifest = Path(cfg.heldout_file).read_bytes() if cfg.heldout_file else None
+    tasks = _filter_heldout([t for g in groups for t in g], manifest, cfg.max_tasks)
+    if not tasks:
+        raise ValueError("No evaluation tasks selected")
     sandbox_factory = modal_sandbox_factory if cfg.sandbox == "modal" else docker_sandbox_factory
 
     tok = tokenizer_utils.get_tokenizer(cfg.model_name)
@@ -243,40 +280,55 @@ async def run(cfg: PingiEvalConfig) -> None:
 
     service = tinker.ServiceClient(base_url=cfg.base_url)
 
-    out_dir = Path(cfg.output_dir) / datetime.now().strftime("%Y%m%d-%H%M%S")
-    out_dir.mkdir(parents=True, exist_ok=True)
+    out_dir = Path(cfg.output_dir) / datetime.now(UTC).strftime("%Y%m%d-%H%M%S-%fZ")
+    out_dir.mkdir(parents=True)
+    manifest_hash = hashlib.sha256(manifest).hexdigest() if manifest is not None else None
+    evidence = {
+        "model_name": cfg.model_name,
+        "checkpoint_path": cfg.checkpoint_path,
+        "compare_with_base": cfg.compare_with_base,
+        "datasets": cfg.datasets,
+        "renderer": r_name,
+        "heldout_manifest_sha256": manifest_hash,
+        "tasks": [{"task_name": t.task_name, "source": t.source} for t in tasks],
+        "thinking_mode": cfg.thinking_mode,
+        "temperature": cfg.temperature,
+        "max_turns": cfg.max_turns,
+        "max_tokens": cfg.max_tokens,
+        "max_trajectory_tokens": cfg.max_trajectory_tokens,
+        "sandbox": cfg.sandbox,
+    }
+    (out_dir / "run.json").write_text(json.dumps(evidence, indent=2) + "\n", encoding="utf-8")
+    logger.info("Eval artifacts: %s", out_dir)
 
-    if cfg.checkpoint_path and cfg.compare_with_base:
-        base_client = service.create_sampling_client(base_model=cfg.model_name).result()
-        pingi_client = service.create_sampling_client(
+    models = {}
+    if not cfg.checkpoint_path or cfg.compare_with_base:
+        models["base"] = await service.create_sampling_client(base_model=cfg.model_name)
+    if cfg.checkpoint_path:
+        models["pingi"] = await service.create_sampling_client(
             model_path=cfg.checkpoint_path, base_model=cfg.model_name
-        ).result()
-        res_base = await _run_suite("base", base_client, tasks, renderer, sandbox_factory, cfg)
-        res_pingi = await _run_suite("pingi", pingi_client, tasks, renderer, sandbox_factory, cfg)
-        (out_dir / "base.jsonl").write_text(
-            "\n".join(json.dumps(asdict(r)) for r in res_base) + "\n", encoding="utf-8"
         )
-        (out_dir / "pingi.jsonl").write_text(
-            "\n".join(json.dumps(asdict(r)) for r in res_pingi) + "\n", encoding="utf-8"
+    results = {}
+    for label, client in models.items():
+        results[label] = await _run_suite(
+            label, client, tasks, renderer, sandbox_factory, cfg, out_dir / f"{label}.jsonl.partial"
         )
-        table = format_summary_table("Inkling-2-Mini (base)", res_base, "PINGI", res_pingi)
-    elif cfg.checkpoint_path:
-        pingi_client = service.create_sampling_client(
-            model_path=cfg.checkpoint_path, base_model=cfg.model_name
-        ).result()
-        res_pingi = await _run_suite("pingi", pingi_client, tasks, renderer, sandbox_factory, cfg)
-        (out_dir / "pingi.jsonl").write_text(
-            "\n".join(json.dumps(asdict(r)) for r in res_pingi) + "\n", encoding="utf-8"
+    errors = sum(row.error is not None for rows in results.values() for row in rows)
+    if errors:
+        raise RuntimeError(f"{errors} task errors; incomplete eval evidence retained in {out_dir}")
+
+    for label, rows in results.items():
+        (out_dir / f"{label}.jsonl").write_text(
+            "".join(json.dumps(asdict(row)) + "\n" for row in rows), encoding="utf-8"
         )
-        table = format_summary_table("PINGI", res_pingi)
+        (out_dir / f"{label}.jsonl.partial").unlink()
+    base_label = f"{cfg.model_name.removeprefix('thinkingmachines/')} (base)"
+    if cfg.compare_with_base:
+        table = format_summary_table(base_label, results["base"], "PINGI", results["pingi"])
+    elif "pingi" in results:
+        table = format_summary_table("PINGI", results["pingi"])
     else:
-        base_client = service.create_sampling_client(base_model=cfg.model_name).result()
-        res_base = await _run_suite("base", base_client, tasks, renderer, sandbox_factory, cfg)
-        (out_dir / "base.jsonl").write_text(
-            "\n".join(json.dumps(asdict(r)) for r in res_base) + "\n", encoding="utf-8"
-        )
-        table = format_summary_table("Inkling-2-Mini (base)", res_base)
-
+        table = format_summary_table(base_label, results["base"])
     (out_dir / "summary.md").write_text(table + "\n", encoding="utf-8")
     print("\n" + table + f"\n\nSaved detailed results to {out_dir}")
 
