@@ -47,6 +47,6 @@ The bottom row is not a win. The base model had solved 7 of these 10 with thinki
 
 ## What is saved
 
-Training cost **$18.73** on Tinker, excluding Modal and the later evaluations. Final checkpoints were rechecked on 2026-11-28 at 09:35 UTC: private, with no scheduled expiration. Periodic checkpoints were still present then. The earliest expires at 16:31 UTC the same day. No `high` training run and no full `pingi` run have been started.
+Training cost **$18.73** on Tinker, excluding Modal and the later evaluations. Final checkpoints were rechecked on 2026-11-28 at 09:41 UTC: private, with no scheduled expiration. Periodic checkpoints were still present then. The earliest expires at 16:31 UTC the same day. No `high` training run and no full `pingi` run have been started.
 
 [Findings](https://github.com/lyffseba/pingi/blob/main/docs/FINDINGS.md) · [Next-run checklist](https://github.com/lyffseba/pingi/blob/main/docs/NEXT_RUN.md) · [Source](https://github.com/lyffseba/pingi) · [XAI note](https://huggingface.co/spaces/lyffseba/xai/blob/main/pingi.html)

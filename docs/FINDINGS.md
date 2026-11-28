@@ -79,13 +79,14 @@ Evidence: [note](high-check/README.md) · [manifest](high-check/heldout_tasks.js
 
 ## What is saved for later
 
-Final checkpoints rechecked on 2026-11-28 at 09:35 UTC:
+Final checkpoints rechecked on 2026-11-28 at 09:41 UTC:
 
 - Tinker project `pingi`, session `pingi-pilot` (`00751c13-86fd-503f-99f9-e4db8ba28e63`), finished successfully, not corrupted.
 - `weights/final` and `sampler_weights/final` are private and have no scheduled expiration.
 - Periodic checkpoints `000005` through `000020` were still present and private. The earliest expires at 16:31 UTC on 2026-11-28. Use `final` for later work.
-- Modal app `pingi` had 0 tasks at the documentation check.
-- No local `pingi-rl` or `pingi-eval` process was running.
+- Modal app `pingi` had 0 tasks. No local `pingi-rl` or `pingi-eval` process was running.
+- `ruff check src tests` passed, and `pytest -q` passed 15 tests.
+- The public score report and XAI pages contained no weight files.
 
 The checkpoint URIs document provenance. They do not grant access to another account.
 
@@ -97,3 +98,12 @@ The checkpoint URIs document provenance. They do not grant access to another acc
 - Do not say it matches or trails `Qwen3.8-27B-pi-adapted`. That comparison has not been run.
 - Do not publish the private checkpoints or call the Hugging Face repo a weight release.
 - Do not start the reserved full session `pingi`, an MVP run, or a `high` training pilot until a budget is explicitly approved.
+
+## Where to read it
+
+- [60-task check](followup-eval/README.md) is the result that matters.
+- [20-task check](PILOT.md) is the earlier separate set.
+- [High-thinking check](high-check/README.md) is the disagreement slice only.
+- [Next-run rules](NEXT_RUN.md) · [Benchmarks](BENCHMARKS.md) · [Infrastructure](INFRA.md) · [Smoke](SMOKE.md)
+- Public note: https://huggingface.co/spaces/lyffseba/xai/blob/main/pingi.html
+- Score files, no weights: https://huggingface.co/lyffseba/pingi

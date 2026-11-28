@@ -10,7 +10,7 @@ specifically for the [`pi`](https://pi.dev/) coding agent harness using **Tinker
 | Hugging Face (main hub) | https://huggingface.co/lyffseba/pingi |
 | Hugging Face (smoke checkpoint) | https://huggingface.co/lyffseba/pingi-smo |
 | Companion research (`xai`) | https://github.com/lyffseba/xai · https://huggingface.co/spaces/lyffseba/xai |
-| Docs | [docs/FINDINGS.md](docs/FINDINGS.md) · [docs/NEXT_RUN.md](docs/NEXT_RUN.md) · [docs/PILOT.md](docs/PILOT.md) · [docs/BENCHMARKS.md](docs/BENCHMARKS.md) |
+| Docs | [findings](docs/FINDINGS.md) · [60-task check](docs/followup-eval/README.md) · [high-thinking check](docs/high-check/README.md) · [next-run rules](docs/NEXT_RUN.md) · [pilot](docs/PILOT.md) · [benchmarks](docs/BENCHMARKS.md) |
 
 ## Pilot complete — not ready to scale
 
@@ -76,22 +76,26 @@ Training mixture (`scale800` + `termgrade`): [populate the local Harbor cache](d
 
 ---
 
-## 4. Run PINGI Training (Budget Ladder — Non-Thinking Default)
+## 4. Training record, not a launch menu
 
-| Preset | Command | Nominal rollouts | Tinker cost | Goal |
+Nothing below is approved to run. The commands are kept so the completed work and the unused presets are not lost.
+
+| Preset | Command | Nominal rollouts | Tinker cost | Status |
 |---|---|---:|---:|---|
-| **`smoke`** | `uv run pingi-rl preset=smoke` | 12 (`2×2×3`, Docker) | **~$0.25** (estimate) | Verify Tinker + tools + Docker end-to-end |
-| **`pilot`** | `PINGI_MODAL_ENVIRONMENT=pingi uv run pingi-rl preset=pilot session_name=pingi-pilot wandb_project=None` | 640 (`4×8×20`, Modal environment `pingi`) | **$18.73** (recorded) | Completed; see the [pilot report](docs/PILOT.md). |
-| **`mvp`** | `uv run pingi-rl preset=mvp` | 1,600 (`4×8×50`, Modal) | **~$15 – $40** | Strong daily-driver PINGI on `scale800 + termgrade` |
-| **`full`** | `uv run pingi-rl preset=full` | 5,120 (`4×8×160`, Modal) | **~$75 – $135** | Full `Qwen3.8-27B-pi-adapted` scale |
+| **`smoke`** | `uv run pingi-rl preset=smoke` | 12 (`2×2×3`, Docker) | **~$0.25** (estimate) | Completed. Infrastructure only. [Record](docs/SMOKE.md). |
+| **`pilot`** | `PINGI_MODAL_ENVIRONMENT=pingi uv run pingi-rl preset=pilot session_name=pingi-pilot wandb_project=None` | 640 (`4×8×20`, Modal environment `pingi`) | **$18.73** (recorded) | Completed. Behind base on the 60-task check. [Report](docs/PILOT.md). |
+| **`mvp`** | `uv run pingi-rl preset=mvp` | 1,600 (`4×8×50`, Modal) | **~$15 – $40** | Not run. Not approved. |
+| **`full`** | `uv run pingi-rl preset=full` | 5,120 (`4×8×160`, Modal) | **~$75 – $135** | Not run. Not approved. Reserved session name `pingi` has not been created. |
 
-Costs above exclude Modal and standalone evaluation; estimates are not spending caps. The MVP and full presets have not been run. Do not warm-start another `none` run from the pilot just because its checkpoint exists. The reserved full session name is `pingi`, and it has not been created.
+Costs above exclude Modal and standalone evaluation. Estimates are not spending caps. Do not warm-start another `none` run from the pilot just because its checkpoint exists.
 
 ### Do not train a `high` variant on the current evidence
 
 A $10 inference check already compared the saved checkpoint with base Inkling at thinking `high` on the 10 tasks where they disagreed. The base model scored 0/10 and the pilot scored 1/10, against 7/10 and 3/10 on those same tasks at `none`. That is not approval for the old `mvp` command with `thinking_mode=high`. See [docs/high-check/README.md](docs/high-check/README.md).
 
-### Optional Stage 0 + Stage 1: Cheap Verified `pi` Trace Mining (Modular Cloud) + Tinker SFT Warmup
+### Not run: trace mining and SFT warmup
+
+These commands were never part of the completed pilot. They are not approved.
 
 ```bash
 # Stage 0: Mine verifier-passing pi traces using Modular Cloud free credits

@@ -1,6 +1,6 @@
-# Ready for a future run
+# Paused. No next run is approved.
 
-**No next run is approved or running.** This checklist is here so the next launch does not depend on chat history.
+**Nothing is training or evaluating.** This checklist is here so a future launch does not depend on chat history. It is not permission to start one.
 
 ## Current decision
 
@@ -10,7 +10,7 @@ The reserved full session name remains `pingi`. It has not been created. The fin
 
 ## Saved checkpoint
 
-Use these private Tinker paths. Rechecked on 2026-11-28 at 09:35 UTC, both still had no scheduled expiration:
+Use these private Tinker paths. Rechecked on 2026-11-28 at 09:41 UTC, both still had no scheduled expiration:
 
 - Resume training: `tinker://00751c13-86fd-503f-99f9-e4db8ba28e63:train:0/weights/final`
 - Evaluate: `tinker://00751c13-86fd-503f-99f9-e4db8ba28e63:train:0/sampler_weights/final`
