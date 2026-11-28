@@ -4,7 +4,7 @@
 
 ## Current decision
 
-Do not continue the `none` adapter just because the 20-task check was positive. The 60-task check put the same final sampler behind base Inkling: **23/60 vs 27/60**, +3 / −7. Read [FINDINGS.md](FINDINGS.md) before spending more.
+Do not continue the `none` adapter just because the 20-task check was positive. The 60-task check put the same final sampler behind base Inkling: **23/60 vs 27/60**, +3 / −7. A separate `high` inference check on those 10 disagreements scored **1/10 vs 0/10**, against 3/10 vs 7/10 at `none`. Do not average the checks. Read [FINDINGS.md](FINDINGS.md) before spending more.
 
 The reserved full session name remains `pingi`. It has not been created. The finished session `pingi-pilot` cannot be renamed or reused as the live driver.
 
@@ -30,7 +30,7 @@ Periodic checkpoints expire on 2026-11-28. Do not plan a resume around `000020`.
 
 ## If the next experiment is a `high` pilot
 
-This starts from base Inkling. It does not repair the `none` result. Approve a budget before launching. The planning range is roughly **$55–75 on Tinker, plus Modal**, assuming the same 20-batch pilot schedule and the current 4,096-token generation cap. It is not a quote.
+Do not start one on the current evidence. The $10 inference check already ran and made both models worse on the disagreement slice. A training pilot would start from base Inkling, not from the `none` checkpoint, and it would not repair the 23/60 result. If it is approved later anyway, the old planning range is roughly **$55–75 on Tinker, plus Modal**, assuming the same 20-batch pilot schedule and a 4,096-token generation cap. It is not a quote.
 
 Use a new session name, `pingi-pilot-high`. Do not use `pingi` or `pingi-pilot`.
 

@@ -32,6 +32,17 @@ tags:
 
 That check gained one task and lost none. It is a separate frozen set. Do not average it with the 60-task result.
 
+## Separate high-thinking check (2026-11-28)
+
+This is not a third held-out score. It reran the 10 tasks where the models already disagreed, at thinking `high` and an 8,192-token generation cap.
+
+| Model | These 10 tasks at `high` | Same 10 tasks at `none` |
+|---|---:|---:|
+| Base Inkling-2-Mini | 0/10 | 7/10 |
+| `pingi-pilot` final checkpoint | 1/10 | 3/10 |
+
+The pilot's only pass was a task it had lost at `none`. No task errors were recorded. Tinker reported **$0.35**, excluding Modal. Do not average this with either held-out check, and do not read 1/10 as a win over the base model.
+
 [20-task manifest](pilot-results/heldout_tasks.json) · [Base scores](pilot-results/base.jsonl) · [Pilot scores](pilot-results/pingi.jsonl)
 
 ## Build record

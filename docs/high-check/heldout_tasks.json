@@ -1,0 +1,52 @@
+[
+  {
+    "task_name": "task_00109_d82bc5",
+    "source": "harness-hub/termgrade-train-harbor",
+    "instruction_sha256": "f0a494a8c7684ec581b476a3ee187845a3ce5b712407bc41aa0bc4c7c4a2dace"
+  },
+  {
+    "task_name": "agronholm__exceptiongroup.0b4f4937.combine_module__0oguvz02",
+    "source": "harness-hub/scale800-harbor",
+    "instruction_sha256": "cceca2a3c5037aac529947c14bd2344d586a9455fb0fc0225296896c8b49dbfa"
+  },
+  {
+    "task_name": "task_03450_f9a34a",
+    "source": "harness-hub/termgrade-train-harbor",
+    "instruction_sha256": "4fba40c13d99c1f1a06555feee0d87af100a66058450820b97bbbdba641002b6"
+  },
+  {
+    "task_name": "gosuri__uiprogress.484b9f69.func_pm_remove_loop__2a35mll4",
+    "source": "harness-hub/scale800-harbor",
+    "instruction_sha256": "7dde9148c025ad77d481649d9f6abbb4b2b36ad30c368ebf3ff5622dfa35fed2"
+  },
+  {
+    "task_name": "task_01318_d38a81",
+    "source": "harness-hub/termgrade-train-harbor",
+    "instruction_sha256": "38d1666c88f2698080551f0d123fdd96307d3d94590e4f8ad22743a37167e335"
+  },
+  {
+    "task_name": "task_12182_baae2f",
+    "source": "harness-hub/termgrade-train-harbor",
+    "instruction_sha256": "10772d19efd48b36bf1b884adfa9b3d826efaeb23904a624fc44f34e4fc25d09"
+  },
+  {
+    "task_name": "task_02787_376c55",
+    "source": "harness-hub/termgrade-train-harbor",
+    "instruction_sha256": "25bef2756dbaebc2f36609c40c6273dbb1fb27bbf3f1f4a31a6455890998fe92"
+  },
+  {
+    "task_name": "allegro__bigcache.5aa251c4.func_pm_flip_operators__v4fgmvqd",
+    "source": "harness-hub/scale800-harbor",
+    "instruction_sha256": "5b198132aa2bb3b3faa8a486b06ebef33c10f8b040f3daffefccb0644ec75cff"
+  },
+  {
+    "task_name": "marshmallow-code__apispec.8b421526.combine_file__x34b5zjs",
+    "source": "harness-hub/scale800-harbor",
+    "instruction_sha256": "77405010feb07f7b4d83dcd58191f5e3e5c0fda4937cd6e3dc10491567f2c0ce"
+  },
+  {
+    "task_name": "task_08136_3936dc",
+    "source": "harness-hub/termgrade-train-harbor",
+    "instruction_sha256": "45718f9847c42ce63c81f5b27d678eff6a875320cf7503e9cac6df30d7fea790"
+  }
+]

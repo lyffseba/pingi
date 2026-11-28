@@ -14,7 +14,7 @@ specifically for the [`pi`](https://pi.dev/) coding agent harness using **Tinker
 
 ## Pilot complete — not ready to scale
 
-The saved `none` pilot is behind base Inkling on the later 60-task check: **23/60 versus 27/60**, with 3 new solves and 7 losses. An earlier 20-task check had shown 11/20 versus 10/20. Do not combine those sets. Training cost **$18.73** on Tinker, excluding Modal and the separate evals. Checkpoints remain private. No next run is approved. See [findings](docs/FINDINGS.md) and the [next-run checklist](docs/NEXT_RUN.md).
+The saved `none` pilot is behind base Inkling on the later 60-task check: **23/60 versus 27/60**, with 3 new solves and 7 losses. An earlier 20-task check had shown 11/20 versus 10/20. A separate `high` inference check on the 10 disagreements scored 1/10 versus 0/10. Do not combine those checks. Training cost **$18.73** on Tinker, excluding Modal and the separate evals. Checkpoints remain private. No next run is approved. See [findings](docs/FINDINGS.md) and the [next-run checklist](docs/NEXT_RUN.md).
 
 ## Design Decisions
 

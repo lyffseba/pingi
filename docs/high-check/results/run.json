@@ -1,0 +1,56 @@
+{
+  "model_name": "thinkingmachines/Inkling-2-Mini",
+  "checkpoint_path": "tinker://00751c13-86fd-503f-99f9-e4db8ba28e63:train:0/sampler_weights/final",
+  "compare_with_base": true,
+  "datasets": "harness-hub/scale800-harbor,harness-hub/termgrade-train-harbor",
+  "renderer": "tml_v0",
+  "heldout_manifest_sha256": "841d2417b431c6c99784ceaf5e6db9284cc4fa38bf2dd58c70fe02d0ee6d48ae",
+  "tasks": [
+    {
+      "task_name": "task_00109_d82bc5",
+      "source": "harness-hub/termgrade-train-harbor"
+    },
+    {
+      "task_name": "agronholm__exceptiongroup.0b4f4937.combine_module__0oguvz02",
+      "source": "harness-hub/scale800-harbor"
+    },
+    {
+      "task_name": "task_03450_f9a34a",
+      "source": "harness-hub/termgrade-train-harbor"
+    },
+    {
+      "task_name": "gosuri__uiprogress.484b9f69.func_pm_remove_loop__2a35mll4",
+      "source": "harness-hub/scale800-harbor"
+    },
+    {
+      "task_name": "task_01318_d38a81",
+      "source": "harness-hub/termgrade-train-harbor"
+    },
+    {
+      "task_name": "task_12182_baae2f",
+      "source": "harness-hub/termgrade-train-harbor"
+    },
+    {
+      "task_name": "task_02787_376c55",
+      "source": "harness-hub/termgrade-train-harbor"
+    },
+    {
+      "task_name": "allegro__bigcache.5aa251c4.func_pm_flip_operators__v4fgmvqd",
+      "source": "harness-hub/scale800-harbor"
+    },
+    {
+      "task_name": "marshmallow-code__apispec.8b421526.combine_file__x34b5zjs",
+      "source": "harness-hub/scale800-harbor"
+    },
+    {
+      "task_name": "task_08136_3936dc",
+      "source": "harness-hub/termgrade-train-harbor"
+    }
+  ],
+  "thinking_mode": "high",
+  "temperature": 0.0,
+  "max_turns": 25,
+  "max_tokens": 8192,
+  "max_trajectory_tokens": 49152,
+  "sandbox": "modal"
+}
