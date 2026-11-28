@@ -87,11 +87,9 @@ Training mixture (`scale800` + `termgrade`): [populate the local Harbor cache](d
 
 Costs above exclude Modal and standalone evaluation; estimates are not spending caps. The MVP and full presets have not been run. Do not warm-start another `none` run from the pilot just because its checkpoint exists. The reserved full session name is `pingi`, and it has not been created.
 
-### Optional: Train a `High-Thinking` (`high`) Variant Later
+### Do not train a `high` variant on the current evidence
 
-```bash
-uv run pingi-rl preset=mvp thinking_mode=high max_tokens=16384 max_trajectory_tokens=49152
-```
+A $10 inference check already compared the saved checkpoint with base Inkling at thinking `high` on the 10 tasks where they disagreed. The base model scored 0/10 and the pilot scored 1/10, against 7/10 and 3/10 on those same tasks at `none`. That is not approval for the old `mvp` command with `thinking_mode=high`. See [docs/high-check/README.md](docs/high-check/README.md).
 
 ### Optional Stage 0 + Stage 1: Cheap Verified `pi` Trace Mining (Modular Cloud) + Tinker SFT Warmup
 

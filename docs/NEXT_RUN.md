@@ -10,12 +10,12 @@ The reserved full session name remains `pingi`. It has not been created. The fin
 
 ## Saved checkpoint
 
-Use these private Tinker paths, verified on 2026-11-27 with no scheduled expiration:
+Use these private Tinker paths. Rechecked on 2026-11-28 at 09:35 UTC, both still had no scheduled expiration:
 
 - Resume training: `tinker://00751c13-86fd-503f-99f9-e4db8ba28e63:train:0/weights/final`
 - Evaluate: `tinker://00751c13-86fd-503f-99f9-e4db8ba28e63:train:0/sampler_weights/final`
 
-Periodic checkpoints expire on 2026-11-28. Do not plan a resume around `000020`.
+Periodic checkpoints were still present at that check. The earliest expires at 16:31 UTC on 2026-11-28. Do not plan a resume around `000020`.
 
 ## Before any paid command
 

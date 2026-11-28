@@ -1,6 +1,6 @@
 # Infrastructure & Expansion Stack
 
-The smoke test, 20-batch [pilot](PILOT.md), and 60-task follow-up are complete. The pilot recorded **$18.73 on Tinker**, excluding Modal and standalone eval. The follow-up did not support more training. No next run is approved. See [NEXT_RUN.md](NEXT_RUN.md).
+The smoke test, 20-batch [pilot](PILOT.md), 60-task follow-up, and 10-task `high` inference check are complete. The pilot recorded **$18.73 on Tinker**, excluding Modal and standalone eval. Neither later check supported more training. No next run is approved. See [NEXT_RUN.md](NEXT_RUN.md).
 
 ## Stack used for the smoke run and pilot
 

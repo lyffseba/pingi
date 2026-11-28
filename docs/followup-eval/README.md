@@ -9,7 +9,7 @@
 | Base Inkling-2-Mini | 27/60 (45.0%) | 15.0 | 11.5 |
 | `pingi-pilot` | 23/60 (38.3%) | 16.0 | 13.0 |
 
-**+3 newly solved, −7 lost.** No task errors. `scale800-harbor` was tied at 14/30. `termgrade-train-harbor` was 9/30 for the pilot against 13/30 for the base model. The recorded telemetry had zero `edit` calls on both sides, so edit-error rate is not informative. Do not pool this set with the earlier 20-task result.
+**+3 newly solved, −7 lost.** No task errors. `scale800-harbor` was tied at 14/30. `termgrade-train-harbor` was 9/30 for the pilot against 13/30 for the base model. The recorded telemetry had zero `edit` calls on both sides, so edit-error rate is not informative. Do not pool this set with the earlier 20-task result. A later `high` rerun of the 10 disagreements is recorded separately in [high-check/README.md](../high-check/README.md). Do not average that slice with this score.
 
 [Manifest](heldout_tasks.json) · [base scores](results/base.jsonl) · [pilot scores](results/pingi.jsonl) · [settings and hashes](results/run.json).
 

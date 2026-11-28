@@ -11,6 +11,17 @@ These are separate frozen sets. Do not average them.
 
 Both used thinking `none`, temperature `0.0`, and a 25-turn cap. Neither is Terminal-Bench or SWE-bench. The 60-task loss was 14/30 versus 14/30 on `scale800` and 9/30 versus 13/30 on `termgrade`. Full evidence is in [FINDINGS.md](FINDINGS.md).
 
+## Diagnostic, not a third held-out set
+
+On 2026-11-28 the same checkpoint was rerun at thinking `high` on only the 10 tasks where the models already disagreed. The generation cap was 8,192, not 4,096. Do not add these numbers to the table above.
+
+| Slice | Base Inkling | `pingi-pilot` |
+|---|---:|---:|
+| Same 10 tasks at `none` | 7/10 | 3/10 |
+| Same 10 tasks at `high` | 0/10 | 1/10 |
+
+Thinking `high` made both models worse on that slice. It does not change 23/60 versus 27/60. Evidence: [high-check/README.md](high-check/README.md).
+
 ## Primary reference target: `harness-hub/Qwen3.8-27B-pi-adapted`
 
 `harness-hub/Qwen3.8-27B-pi-adapted` is our primary target reference because it uses the **same `pi` harness**, the **same Harbor dataset mixture** (`scale800-harbor` + `termgrade-train-harbor`), **thinking OFF**, **LoRA rank 32**, and **verifier correctness + 0.1 tool-efficiency shaping**:

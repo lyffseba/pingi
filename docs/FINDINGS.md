@@ -72,16 +72,16 @@ Evidence: [note](high-check/README.md) · [manifest](high-check/heldout_tasks.js
 - W&B was disabled after a config-upload crash. Local metrics were enough to finish the pilot.
 - One training batch stalled on a Modal exec-status retry. Terminating that one sandbox let the batch finish. The run still completed and saved `final`.
 - The old ~$7 pilot estimate was not a cap. The recorded Tinker bill was **$18.73**, excluding Modal and standalone evals.
-- A `high` pilot is not a cheap flag flip. The `none` run sampled 6,801,485 tokens and trained 15,470,364. Thinking `high` emits more tokens inside the same 4,096-token generation cap. Applying the project's own 3–4× token claim to the $18.73 bill gives a planning range of roughly **$55–75 on Tinker, plus Modal**. That is not a quote and not a stop. Raising `max_tokens` above 4,096 could cost more.
+- A `high` training pilot is not a cheap flag flip. The `none` run sampled 6,801,485 tokens and trained 15,470,364. Thinking `high` emits more tokens inside the same 4,096-token generation cap. Applying the project's own 3–4× token claim to the $18.73 bill gives a planning range of roughly **$55–75 on Tinker, plus Modal**. That is not a quote. The later inference check is a reason not to spend it. Raising `max_tokens` above 4,096 could cost more.
 - A weight upload now requires one paired eval whose recorded checkpoint and task manifest match the checkpoint being uploaded, plus a net gain over base. The 60-task result fails that test. `allow_unverified=True` can bypass the check, so do not use it for a public release.
 
 ## What is saved for later
 
-Verified on 2026-11-27:
+Final checkpoints rechecked on 2026-11-28 at 09:35 UTC:
 
 - Tinker project `pingi`, session `pingi-pilot` (`00751c13-86fd-503f-99f9-e4db8ba28e63`), finished successfully, not corrupted.
 - `weights/final` and `sampler_weights/final` are private and have no scheduled expiration.
-- Periodic checkpoints `000005` through `000020` expire on 2026-11-28. Use `final` for later work.
+- Periodic checkpoints `000005` through `000020` were still present and private. The earliest expires at 16:31 UTC on 2026-11-28. Use `final` for later work.
 - Modal app `pingi` had 0 tasks at the documentation check.
 - No local `pingi-rl` or `pingi-eval` process was running.
 
