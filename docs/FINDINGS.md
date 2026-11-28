@@ -46,7 +46,9 @@ Paired counts on the same 60 tasks: 20 solved by both, 3 by the pilot only, 7 by
 | `harness-hub/scale800-harbor` | 14/30 | 14/30 |
 | `harness-hub/termgrade-train-harbor` | 13/30 | 9/30 |
 
-The loss is concentrated in `termgrade`. `scale800` was tied. The recorded eval telemetry counted **zero `edit` tool calls** for both models, so the 0% edit-error rate is not evidence about edit quality. Both models used the same `read`, `bash`, `edit`, and `write` tool definitions; they simply did not record an `edit` call on these tasks.
+Those source names are also the task types. Every `scale800` task was a repair to an existing repository, and the models tied at 14/30. Every `termgrade` task was a new tool written from a written contract, and the pilot scored 9/30 against the base model's 13/30. That is the whole 4-task deficit. The contract instructions are long and exact. On 4 of the 7 losses, the pilot used fewer turns than the base model, with a median of 14 against 19, so it often stopped earlier and was wrong. The saved scores do not include the full trajectories.
+
+The recorded eval telemetry counted **zero `edit` tool calls** for both models, so the 0% edit-error rate is not evidence about edit quality. Both models used the same `read`, `bash`, `edit`, and `write` tool definitions; they simply did not record an `edit` call on these tasks.
 
 This was not Terminal-Bench, SWE-bench, or a comparison with `harness-hub/Qwen3.8-27B-pi-adapted`. It was a same-mixture generalization check. It does not prove the adapter has no useful behavior, and it does not justify more `none` RL or a weight release.
 

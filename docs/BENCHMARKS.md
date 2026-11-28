@@ -9,7 +9,7 @@ These are separate frozen sets. Do not average them.
 | 20 held-out tasks, 2026-11-22 | 10/20 | 11/20 | +1 / −0 |
 | 60 fresh tasks, 2026-11-27 | 27/60 | 23/60 | +3 / −7 |
 
-Both used thinking `none`, temperature `0.0`, and a 25-turn cap. Neither is Terminal-Bench or SWE-bench. The 60-task loss was 14/30 versus 14/30 on `scale800` and 9/30 versus 13/30 on `termgrade`. Full evidence is in [FINDINGS.md](FINDINGS.md).
+Both used thinking `none`, temperature `0.0`, and a 25-turn cap. Neither is Terminal-Bench or SWE-bench. The 60-task rows are also the task types: repository repair was tied at 14/30, and writing a new tool from a contract was 9/30 against 13/30. That is the whole gap. Full evidence is in [FINDINGS.md](FINDINGS.md).
 
 ## Diagnostic, not a third held-out set
 
